@@ -128,6 +128,9 @@ async function viewHome() {
         ${cardAudiovisuales()}
         ${cardIlustradores()}
         ${cardArtistas()}
+        ${cardProductora()}
+        ${cardSemillero()}
+        ${cardCursos()}
       </div>
     </div>
   </section>
@@ -219,6 +222,53 @@ function cardArtistas() {
         <li>Ingreso al sello y a la red</li>
       </ul>
       <span class="card-more">Sumarme →</span>
+    </a>`;
+}
+
+function cardProductora() {
+  return `
+    <a class="home-card" href="#/productora" data-link>
+      <span class="card-icon" aria-hidden="true">🎛️</span>
+      <h3>Productora</h3>
+      <p>Producimos tu obra. Valores claros por cada formato.</p>
+      <ul class="card-list">
+        <li>Single · EP · Disco</li>
+        <li>Videoclip</li>
+        <li>HOGARES · CONCIERTO</li>
+        <li>LOCALES · SESIONES</li>
+      </ul>
+      <span class="card-more">Ver valores →</span>
+    </a>`;
+}
+
+function cardSemillero() {
+  return `
+    <a class="home-card" href="#/semillero" data-link>
+      <span class="card-icon" aria-hidden="true">🌱</span>
+      <h3>Semillero</h3>
+      <p>Todo el mundo puede crear, cantar, componer y producir.</p>
+      <ul class="card-list">
+        <li>Plantá tu idea, letra o melodía</li>
+        <li>Encontrá con quién crearla</li>
+        <li>Tablón: buscá y ofrecé</li>
+      </ul>
+      <span class="card-more">Entrar al semillero →</span>
+    </a>`;
+}
+
+function cardCursos() {
+  return `
+    <a class="home-card" href="#/cursos" data-link>
+      <span class="card-icon" aria-hidden="true">📚</span>
+      <h3>Cursos</h3>
+      <p>Formación musical y humana. Un compartir nutritivo.</p>
+      <ul class="card-list">
+        <li>Música: canto, guitarra, composición</li>
+        <li>Humanidad: escucha, escritura, bienestar</li>
+        <li>Oficios: audiovisual, ilustración</li>
+        <li>Abiertos y para suscriptores</li>
+      </ul>
+      <span class="card-more">Ver cursos →</span>
     </a>`;
 }
 
@@ -824,6 +874,596 @@ function bindApoyar() {
     } catch (err) {
       status.className = "form-status error show";
       status.textContent = "No pudimos registrar el aporte: " + err.message + ".";
+    } finally {
+      btn.disabled = false;
+      btn.textContent = original;
+    }
+  });
+}
+
+/* ==========================================================================
+   VISTA: PRODUCTORA (servicios y valores)
+   ========================================================================== */
+async function viewProductora() {
+  const rows = byOrden(await API.list("servicios"));
+  const cats = ["Grabaciones en estudio", "Audiovisuales", "Combos"];
+
+  return `
+  <section class="section">
+    <div class="container">
+      ${sectionHead("Productora", "Producimos tu obra, de la idea al mundo",
+        "Además de sello, HOGAREÑOS es productora musical y audiovisual. Estos son nuestros valores de referencia por cada formato. Cada proyecto es distinto: escribinos y armamos un presupuesto a medida.")}
+
+      <div class="section-cards" style="margin-bottom:2.5rem;">
+        <article class="home-card" style="cursor:default;"><span class="card-icon">🎙️</span><h3>Estudio propio</h3><p>Grabación, mezcla y master con oído humano y cuidado artesanal.</p></article>
+        <article class="home-card" style="cursor:default;"><span class="card-icon">🎥</span><h3>Equipo audiovisual</h3><p>Registro, edición, color y publicación en el canal del sello.</p></article>
+        <article class="home-card" style="cursor:default;"><span class="card-icon">🤝</span><h3>Trato justo</h3><p>Valores claros, sin sorpresas. La obra es tuya, siempre.</p></article>
+      </div>
+
+      <div class="filters" role="group" aria-label="Filtrar servicios por categoría">
+        <button class="chip active" data-serv="all">Todos</button>
+        ${cats.map((c) => `<button class="chip" data-serv="${esc(c)}">${esc(c)}</button>`).join("")}
+      </div>
+
+      <div class="grid grid-wide" id="serv-grid">
+        ${rows.map((s) => serviceCard(s)).join("")}
+      </div>
+      <p class="empty" id="serv-empty" style="display:none;">No hay servicios en esta categoría.</p>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container">
+      ${sectionHead("Cómo trabajamos", "Cuatro pasos, cero vueltas",
+        "Un recorrido simple y transparente desde tu primer mensaje hasta la publicación.")}
+      <div class="values">
+        <article class="value"><div class="v-icon">💬</div><h3>1. Conversamos</h3><p>Nos contás tu idea, tu canción o tu proyecto y qué necesitás.</p></article>
+        <article class="value"><div class="v-icon">📝</div><h3>2. Presupuesto</h3><p>Te enviamos una propuesta clara con valores, plazos y qué incluye.</p></article>
+        <article class="value"><div class="v-icon">🎚️</div><h3>3. Producimos</h3><p>Grabamos, filmamos, editamos y mezclamos acompañándote en cada paso.</p></article>
+        <article class="value"><div class="v-icon">🚀</div><h3>4. Publicamos</h3><p>Lanzamos tu obra en las plataformas y en el canal del sello.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight" id="presupuesto">
+    <div class="container">
+      ${sectionHead("Pedí tu presupuesto", "Contanos qué querés producir",
+        "Completá el formulario y te respondemos con una propuesta a medida. Si tenés dudas sobre qué servicio elegir, contanos tu idea igual.")}
+      <form class="panel" id="form-solicitud" novalidate>
+        <div class="form-grid">
+          <div class="field">
+            <label for="s-nombre">Nombre o proyecto *</label>
+            <input id="s-nombre" name="nombre" type="text" required />
+          </div>
+          <div class="field">
+            <label for="s-email">Email *</label>
+            <input id="s-email" name="email" type="email" required />
+          </div>
+          <div class="field full">
+            <label for="s-servicio">Servicio que te interesa *</label>
+            <select id="s-servicio" name="servicio" required>
+              ${rows.map((s) => `<option value="${esc(s.nombre)}">${esc(s.nombre)} — US$ ${Number(s.precio).toLocaleString("es-AR")}</option>`).join("")}
+              <option value="No sé todavía / a medida">No sé todavía / a medida</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label for="s-mensaje">Contanos tu proyecto *</label>
+            <textarea id="s-mensaje" name="mensaje" required placeholder="Qué querés producir, cuántas canciones, para cuándo lo necesitás…"></textarea>
+          </div>
+        </div>
+        <p class="form-note">* Campos obligatorios. Los valores son de referencia en USD y pueden ajustarse según el proyecto.</p>
+        <button class="btn btn-primary" type="submit" style="margin-top:1.2rem;">Enviar y pedir presupuesto</button>
+        <div class="form-status" id="s-status" role="status" aria-live="polite"></div>
+      </form>
+    </div>
+  </section>`;
+}
+
+function serviceCard(s) {
+  const price = `${s.moneda === "USD" ? "US$" : "$"} ${Number(s.precio).toLocaleString("es-AR")}`;
+  const incluye = String(s.incluye || "").split(" · ").filter(Boolean);
+  return `
+    <article class="card" data-categoria="${esc(s.categoria)}">
+      <div class="card-thumb" style="background:${gradient((s.id ? String(s.id).charCodeAt(1) * 33 : 30) % 360, 150)}">
+        <span class="card-art" style="font-size:3rem;" aria-hidden="true">${esc(s.icono || "🎵")}</span>
+        ${s.destacado ? '<span class="tag" style="position:absolute;top:1rem;left:1rem;background:rgba(255,250,243,.95);">Más elegido</span>' : ""}
+      </div>
+      <div class="card-body">
+        <span class="tag">${esc(s.categoria)}</span>
+        <h3>${esc(s.nombre)}</h3>
+        <span class="card-artist" style="font-size:1.5rem;font-family:var(--font-display);color:var(--ink);">${price}</span>
+        <p>${esc(s.descripcion)}</p>
+        ${incluye.length ? `<ul class="card-list" style="margin-top:.3rem;">${incluye.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>` : ""}
+        <div class="card-meta"><span>⏱ Entrega: ${esc(s.entrega)}</span></div>
+        <a class="btn btn-ghost btn-sm" style="margin-top:.6rem;" href="#presupuesto">Consultar →</a>
+      </div>
+    </article>`;
+}
+
+function bindProductora() {
+  const grid = document.getElementById("serv-grid");
+  const empty = document.getElementById("serv-empty");
+  if (grid) {
+    document.querySelectorAll(".chip[data-serv]").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        document.querySelectorAll(".chip[data-serv]").forEach((c) => c.classList.remove("active"));
+        chip.classList.add("active");
+        const f = chip.dataset.serv;
+        let visibles = 0;
+        grid.querySelectorAll(".card").forEach((card) => {
+          const match = f === "all" || card.dataset.categoria === f;
+          card.style.display = match ? "" : "none";
+          if (match) visibles++;
+        });
+        if (empty) empty.style.display = visibles ? "none" : "block";
+      });
+    });
+  }
+
+  const form = document.getElementById("form-solicitud");
+  if (!form) return;
+  const status = document.getElementById("s-status");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    status.className = "form-status";
+    const data = Object.fromEntries(new FormData(form).entries());
+    if (!data.nombre?.trim() || !data.email?.trim() || !data.mensaje?.trim()) {
+      status.className = "form-status error show";
+      status.textContent = "Completá nombre, email y contanos tu proyecto.";
+      return;
+    }
+    const payload = {
+      nombre: data.nombre.trim(),
+      email: data.email.trim(),
+      servicio: data.servicio || "",
+      mensaje: data.mensaje.trim(),
+      estado: "Nueva",
+      fecha: new Date().toISOString()
+    };
+    const btn = form.querySelector('button[type="submit"]');
+    const original = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "Enviando…";
+    try {
+      await API.create("solicitudes", payload);
+      form.reset();
+      status.className = "form-status ok show";
+      status.textContent = "¡Recibimos tu pedido! Te enviamos el presupuesto a " + payload.email + ".";
+    } catch (err) {
+      status.className = "form-status error show";
+      status.textContent = "No pudimos enviar la solicitud: " + err.message + ". Escribinos a hogarenhos@gmail.com.";
+    } finally {
+      btn.disabled = false;
+      btn.textContent = original;
+    }
+  });
+}
+
+/* ==========================================================================
+   VISTA: SEMILLERO (crear, producir, cantar, componer)
+   ========================================================================== */
+async function viewSemillero() {
+  const [semillas, tablon] = await Promise.all([API.list("semillero"), API.list("tablon")]);
+  const orden = [...semillas].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+  const busca = tablon.filter((t) => t.modalidad === "Busco");
+  const ofrece = tablon.filter((t) => t.modalidad === "Ofrezco");
+
+  return `
+  <section class="section">
+    <div class="container">
+      ${sectionHead("Semillero", "Todo el mundo puede crear",
+        "Este es el espacio donde las ideas empiezan. Acá podés plantar una canción a medio hacer, una letra, una melodía, un poema o un proyecto, y encontrar a otras personas para que crezca. Nadie necesita estar \"listo\": el hogar se construye entre todos.")}
+
+      <div class="values" style="margin-bottom:2.5rem;">
+        <article class="value"><div class="v-icon">✍️</div><h3>Escribí</h3><p>Letras, poemas, frases sueltas. Todo lo que tengas ganas de soltar.</p></article>
+        <article class="value"><div class="v-icon">🎼</div><h3>Componé</h3><p>Melodías, acordes, instrumentales. Sumá tu música al hogar.</p></article>
+        <article class="value"><div class="v-icon">🎤</div><h3>Cantá</h3><p>Prestá tu voz a una idea ajena o mostrá la tuya.</p></article>
+        <article class="value"><div class="v-icon">🛠️</div><h3>Producí</h3><p>Mezclá, grabá, ilustrá, difundí. Cada rol hace falta.</p></article>
+      </div>
+
+      <div class="panel" style="margin-bottom:2.5rem;">
+        <h3>Plantá tu semilla</h3>
+        <p class="lead" style="font-size:.95rem;">Contanos qué tenés entre manos. No hace falta que esté terminado: las mejores cosas empiezan a medias.</p>
+        <form id="form-semilla">
+          <div class="form-grid">
+            <div class="field">
+              <label for="se-titulo">Título de tu idea *</label>
+              <input id="se-titulo" name="titulo" type="text" required />
+            </div>
+            <div class="field">
+              <label for="se-autor">Tu nombre o apodo *</label>
+              <input id="se-autor" name="autor" type="text" required />
+            </div>
+            <div class="field">
+              <label for="se-tipo">Tipo</label>
+              <select id="se-tipo" name="tipo">
+                <option>Idea</option><option>Canción</option><option>Letra</option>
+                <option>Poesía</option><option>Melodía</option><option>Instrumental</option>
+                <option>Proyecto</option><option>Grabación</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="se-etiquetas">Etiquetas</label>
+              <input id="se-etiquetas" name="etiquetas" type="text" placeholder="letra, colaboración, folclore…" />
+            </div>
+            <div class="field full">
+              <label for="se-descripcion">Contá tu idea *</label>
+              <textarea id="se-descripcion" name="descripcion" required placeholder="Qué es, en qué etapa está y qué necesitás (una letra, una voz, alguien que mezcle…)"></textarea>
+            </div>
+          </div>
+          <button class="btn btn-primary" type="submit" style="margin-top:1.2rem;">Plantar mi semilla 🌱</button>
+          <div class="form-status" id="se-status" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+
+      <h3 style="margin-bottom:1.2rem;">Semillas en el hogar</h3>
+      <div class="grid grid-wide" id="semillero-grid">
+        ${orden.map((s) => semillaCard(s)).join("")}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container">
+      ${sectionHead("El Tablón", "Encontrémonos para crear",
+        "Buscá lo que necesitás o compartí lo que podés dar. La red funciona cuando nos pedimos y nos ofrecemos cosas.")}
+
+      <form class="panel" id="form-tablon" style="margin-bottom:2rem;">
+        <h3>Publicar en el Tablón</h3>
+        <div class="form-grid">
+          <div class="field">
+            <label for="t-modalidad">¿Buscás u ofrecés? *</label>
+            <select id="t-modalidad" name="modalidad" required>
+              <option value="Busco">Busco</option>
+              <option value="Ofrezco">Ofrezco</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="t-titulo">Título *</label>
+            <input id="t-titulo" name="titulo" type="text" required />
+          </div>
+          <div class="field">
+            <label for="t-autor">Tu nombre *</label>
+            <input id="t-autor" name="autor" type="text" required />
+          </div>
+          <div class="field">
+            <label for="t-etiquetas">Etiquetas</label>
+            <input id="t-etiquetas" name="etiquetas" type="text" placeholder="voz, mezcla, banda…" />
+          </div>
+          <div class="field full">
+            <label for="t-detalle">Detalle *</label>
+            <textarea id="t-detalle" name="detalle" required placeholder="Contá qué buscás o qué ofrecés…"></textarea>
+          </div>
+        </div>
+        <button class="btn btn-primary" type="submit" style="margin-top:1.2rem;">Publicar</button>
+        <div class="form-status" id="t-status" role="status" aria-live="polite"></div>
+      </form>
+
+      <div class="board-columns">
+        <div>
+          <h3 class="board-title board-busco">🔎 Buscan</h3>
+          <div id="tablon-busco">${busca.map((t) => tablonItem(t)).join("") || '<p class="empty">Nadie busca todavía. ¡Sé la primera persona!</p>'}</div>
+        </div>
+        <div>
+          <h3 class="board-title board-ofrezco">🌾 Ofrecen</h3>
+          <div id="tablon-ofrezco">${ofrece.map((t) => tablonItem(t)).join("") || '<p class="empty">Nadie ofrece todavía. ¡Animáte!</p>'}</div>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function semillaCard(s) {
+  const estados = { "Semilla": "🌱", "En germinación": "🌿", "Floreciendo": "🌸", "Cosechada": "🍎" };
+  const icono = estados[s.estado] || "🌱";
+  const hue = (s.id ? String(s.id).charCodeAt(2) * 29 : 60) % 360;
+  return `
+    <article class="card">
+      <div class="card-thumb" style="background:${gradient(hue, 140)}">
+        <span class="card-art" style="font-size:2.2rem;" aria-hidden="true">${icono}</span>
+      </div>
+      <div class="card-body">
+        <span class="tag">${esc(s.tipo)} · ${esc(s.estado)}</span>
+        <h3>${esc(s.titulo)}</h3>
+        <span class="card-artist">por ${esc(s.autor)}</span>
+        <p>${esc(s.descripcion)}</p>
+        ${s.etiquetas ? `<div class="card-meta">${String(s.etiquetas).split(",").map((e) => `<span>#${esc(e.trim())}</span>`).join("")}</div>` : ""}
+        <a class="btn btn-ghost btn-sm" style="margin-top:.5rem;" href="mailto:hogarenhos@gmail.com?subject=Semillero%20-%20${encodeURIComponent(s.titulo)}">Sumarme a esta idea</a>
+      </div>
+    </article>`;
+}
+
+function tablonItem(t) {
+  return `
+    <article class="board-item">
+      <span class="tag">${esc(t.modalidad)}</span>
+      <h4>${esc(t.titulo)}</h4>
+      <p>${esc(t.detalle)}</p>
+      <div class="card-meta">
+        <span>👤 ${esc(t.autor)}</span>
+        ${t.etiquetas ? `<span>${String(t.etiquetas).split(",").map((e) => "#" + esc(e.trim())).join(" ")}</span>` : ""}
+      </div>
+    </article>`;
+}
+
+function bindSemillero() {
+  const formS = document.getElementById("form-semilla");
+  if (formS) {
+    const status = document.getElementById("se-status");
+    const grid = document.getElementById("semillero-grid");
+    formS.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      status.className = "form-status";
+      const data = Object.fromEntries(new FormData(formS).entries());
+      if (!data.titulo?.trim() || !data.autor?.trim() || !data.descripcion?.trim()) {
+        status.className = "form-status error show";
+        status.textContent = "Completá título, tu nombre y la descripción de tu idea.";
+        return;
+      }
+      const payload = {
+        titulo: data.titulo.trim(), autor: data.autor.trim(), tipo: data.tipo || "Idea",
+        descripcion: data.descripcion.trim(), estado: "Semilla", etiquetas: data.etiquetas || "",
+        fecha: new Date().toISOString()
+      };
+      const btn = formS.querySelector('button[type="submit"]');
+      const original = btn.textContent;
+      btn.disabled = true; btn.textContent = "Plantando…";
+      try {
+        await API.create("semillero", payload);
+        if (grid) grid.insertAdjacentHTML("afterbegin", semillaCard(payload));
+        formS.reset();
+        status.className = "form-status ok show";
+        status.textContent = "¡Tu semilla quedó plantada en el hogar! 🌱";
+      } catch (err) {
+        status.className = "form-status error show";
+        status.textContent = "No pudimos plantar tu semilla: " + err.message + ".";
+      } finally {
+        btn.disabled = false; btn.textContent = original;
+      }
+    });
+  }
+
+  const formT = document.getElementById("form-tablon");
+  if (formT) {
+    const status = document.getElementById("t-status");
+    formT.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      status.className = "form-status";
+      const data = Object.fromEntries(new FormData(formT).entries());
+      if (!data.titulo?.trim() || !data.autor?.trim() || !data.detalle?.trim()) {
+        status.className = "form-status error show";
+        status.textContent = "Completá título, tu nombre y el detalle.";
+        return;
+      }
+      const payload = {
+        modalidad: data.modalidad, titulo: data.titulo.trim(), autor: data.autor.trim(),
+        detalle: data.detalle.trim(), etiquetas: data.etiquetas || "", contacto: "vía el sello",
+        fecha: new Date().toISOString()
+      };
+      const btn = formT.querySelector('button[type="submit"]');
+      const original = btn.textContent;
+      btn.disabled = true; btn.textContent = "Publicando…";
+      try {
+        await API.create("tablon", payload);
+        const col = document.getElementById(payload.modalidad === "Busco" ? "tablon-busco" : "tablon-ofrezco");
+        if (col) col.insertAdjacentHTML("afterbegin", tablonItem(payload));
+        formT.reset();
+        status.className = "form-status ok show";
+        status.textContent = "¡Tu publicación ya está en el Tablón!";
+      } catch (err) {
+        status.className = "form-status error show";
+        status.textContent = "No pudimos publicar: " + err.message + ".";
+      } finally {
+        btn.disabled = false; btn.textContent = original;
+      }
+    });
+  }
+}
+
+/* ==========================================================================
+   VISTA: CURSOS (formación musical, humana y de oficios + suscripción)
+   ========================================================================== */
+async function viewCursos() {
+  const [cursos, planes] = await Promise.all([API.list("cursos"), API.list("planes")]);
+  const orden = byOrden(cursos);
+  const planesOrden = byOrden(planes);
+  const abiertos = orden.filter((c) => c.acceso === "Abierto");
+
+  return `
+  <section class="section">
+    <div class="container">
+      ${sectionHead("Cursos", "Formación para el alma y para el oficio",
+        "Un compartir nutritivo para el ser humano. Aprendemos música, pero también aprendemos a escuchar, a escribir, a cuidar(nos) y a producir con nuestras propias manos. Hay cursos abiertos para toda la comunidad y cursos exclusivos para quienes sostienen el hogar con una suscripción.")}
+
+      <div class="values" style="margin-bottom:2.5rem;">
+        <article class="value"><div class="v-icon">🎵</div><h3>Música</h3><p>Canto, guitarra, composición, producción. El oficio de hacer canciones.</p></article>
+        <article class="value"><div class="v-icon">🫀</div><h3>Humanidad</h3><p>Escucha, escritura, voz y bienestar. Formación para la vida y los vínculos.</p></article>
+        <article class="value"><div class="v-icon">🛠️</div><h3>Oficios</h3><p>Audiovisual, ilustración. Herramientas para difundir tu obra con tus manos.</p></article>
+      </div>
+
+      ${abiertos.length ? `
+      <div class="panel" style="margin-bottom:2.5rem;border-left:5px solid var(--sage);">
+        <span class="tag" style="background:rgba(111,125,84,.16);color:#4c5738;">Abiertos y gratuitos</span>
+        <h3 style="margin-top:.6rem;">Cursos para toda la comunidad</h3>
+        <p class="lead" style="font-size:.95rem;">Creemos que el conocimiento se comparte. Estos cursos son libres y no requieren suscripción: solo ganas de estar.</p>
+        <div class="grid grid-wide" style="margin-top:1.2rem;">
+          ${abiertos.map((c) => courseCard(c, true)).join("")}
+        </div>
+      </div>` : ""}
+
+      <div class="filters" role="group" aria-label="Filtrar cursos por categoría">
+        <button class="chip active" data-cur="all">Todos</button>
+        <button class="chip" data-cur="Música">Música</button>
+        <button class="chip" data-cur="Humanidad">Humanidad</button>
+        <button class="chip" data-cur="Oficios">Oficios</button>
+        <button class="chip" data-cur="abiertos">Abiertos</button>
+      </div>
+
+      <div class="grid grid-wide" id="cursos-grid">
+        ${orden.map((c) => courseCard(c)).join("")}
+      </div>
+      <p class="empty" id="cursos-empty" style="display:none;">No hay cursos en esta categoría todavía.</p>
+    </div>
+  </section>
+
+  <section class="section-tight" id="suscripcion">
+    <div class="container">
+      ${sectionHead("Suscripción", "Sé parte del hogar",
+        "Suscribirte es sostener la red y, a cambio, recibir formación, música y comunidad. Un intercambio nutritivo: tu aporte mensual hace posible que más artistas graben y que el conocimiento circule.")}
+      <div class="plan-grid">
+        ${planesOrden.map((p) => planCard(p)).join("")}
+      </div>
+      <p class="form-note" style="text-align:center;max-width:60ch;margin:1.6rem auto 0;">Al suscribirte te contactamos para coordinar el medio de pago (transferencia, billetera virtual o link de pago). Tu lugar en el hogar queda reservado desde el primer mensaje.</p>
+    </div>
+  </section>
+
+  <section class="section-tight" id="alta">
+    <div class="container">
+      ${sectionHead("Sumate", "Quiero ser parte de los Cursos",
+        "Completá tus datos y contanos qué te interesa. Te escribimos con los próximos pasos y el acceso.")}
+      <form class="panel" id="form-suscripcion" novalidate>
+        <div class="form-grid">
+          <div class="field">
+            <label for="su-nombre">Nombre y apellido *</label>
+            <input id="su-nombre" name="nombre" type="text" required autocomplete="name" />
+          </div>
+          <div class="field">
+            <label for="su-email">Email *</label>
+            <input id="su-email" name="email" type="email" required autocomplete="email" />
+          </div>
+          <div class="field">
+            <label for="su-plan">Plan de suscripción *</label>
+            <select id="su-plan" name="plan" required>
+              ${planesOrden.map((p) => `<option value="${esc(p.nombre)}">${esc(p.nombre)} — US$ ${Number(p.precio).toLocaleString("es-AR")} ${esc(p.periodo)}</option>`).join("")}
+              <option value="Solo cursos abiertos">Solo cursos abiertos (gratis)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="su-interes">Me interesa sobre todo</label>
+            <select id="su-interes" name="interes">
+              <option>Música</option>
+              <option>Humanidad</option>
+              <option>Oficios</option>
+              <option>Un poco de todo</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label for="su-mensaje">Contanos qué buscás</label>
+            <textarea id="su-mensaje" name="mensaje" placeholder="Qué te gustaría aprender o compartir en el hogar…"></textarea>
+          </div>
+        </div>
+        <p class="form-note">* Campos obligatorios. Esta es una pre-inscripción: no se cobra nada desde esta página.</p>
+        <button class="btn btn-primary" type="submit" style="margin-top:1.2rem;">Quiero sumarme</button>
+        <div class="form-status" id="su-status" role="status" aria-live="polite"></div>
+      </form>
+    </div>
+  </section>`;
+}
+
+function courseCard(c, abierto = false) {
+  const isOpen = c.acceso === "Abierto";
+  const precio = isOpen
+    ? '<span class="price-free">Gratis</span>'
+    : `<span class="card-artist" style="font-size:1.35rem;font-family:var(--font-display);color:var(--ink);">US$ ${Number(c.precio).toLocaleString("es-AR")}</span> <span style="font-size:.78rem;color:var(--ink-soft);">· incluido en la suscripción</span>`;
+  const temario = String(c.temario || "").split(" · ").filter(Boolean);
+  const hue = (c.id ? String(c.id).charCodeAt(1) * 37 : 40) % 360;
+  return `
+    <article class="card" data-cat="${esc(c.categoria)}" data-acceso="${esc(c.acceso)}">
+      <div class="card-thumb" style="background:${gradient(hue, 150)}">
+        <span class="card-art" style="font-size:2.6rem;" aria-hidden="true">${esc(c.icono || "📚")}</span>
+        <span class="tag" style="position:absolute;top:1rem;left:1rem;background:${isOpen ? "rgba(255,250,243,.95)" : "rgba(43,33,26,.82)"};color:${isOpen ? "#4c5738" : "#ffd98a"};">${isOpen ? "Abierto" : "Suscriptores"}</span>
+        ${c.destacado ? '<span class="tag" style="position:absolute;top:1rem;right:1rem;background:rgba(255,250,243,.95);">★ Destacado</span>' : ""}
+      </div>
+      <div class="card-body">
+        <span class="tag">${esc(c.categoria)} · ${esc(c.nivel)}</span>
+        <h3>${esc(c.titulo)}</h3>
+        <span class="card-artist">con ${esc(c.docente)}</span>
+        <p>${esc(c.descripcion)}</p>
+        ${temario.length ? `<ul class="card-list" style="margin-top:.3rem;">${temario.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
+        <div class="card-meta">
+          <span>⏱ ${esc(c.duracion)}</span>
+          <span>💻 ${esc(c.modalidad)}</span>
+          ${c.cupos ? `<span>👥 ${esc(c.cupos)} cupos</span>` : ""}
+        </div>
+        <div style="margin-top:.6rem;">${precio}</div>
+        <a class="btn ${isOpen ? "btn-ghost" : "btn-primary"} btn-sm" style="margin-top:.7rem;" href="${isOpen ? "mailto:hogarenhos@gmail.com?subject=Curso%20abierto:%20" + encodeURIComponent(c.titulo) : "#alta"}">${isOpen ? "Inscribirme gratis" : "Quiero acceder"}</a>
+      </div>
+    </article>`;
+}
+
+function planCard(p) {
+  const beneficios = String(p.beneficios || "").split(" · ").filter(Boolean);
+  return `
+    <article class="plan-card ${p.destacado ? "plan-featured" : ""}">
+      ${p.destacado ? '<span class="plan-ribbon">Más elegido</span>' : ""}
+      <h3>${esc(p.nombre)}</h3>
+      <p class="plan-publico">${esc(p.publico)}</p>
+      <div class="plan-price">
+        <span class="amount">US$ ${Number(p.precio).toLocaleString("es-AR")}</span>
+        <span class="period">${esc(p.periodo)}</span>
+      </div>
+      <ul class="plan-benefits">
+        ${beneficios.map((b) => `<li>${esc(b)}</li>`).join("")}
+      </ul>
+      <a class="btn ${p.destacado ? "btn-primary" : "btn-ghost"}" href="#alta" style="width:100%;">Elegir ${esc(p.nombre)}</a>
+    </article>`;
+}
+
+function bindCursos() {
+  const grid = document.getElementById("cursos-grid");
+  const empty = document.getElementById("cursos-empty");
+  if (grid) {
+    document.querySelectorAll(".chip[data-cur]").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        document.querySelectorAll(".chip[data-cur]").forEach((c) => c.classList.remove("active"));
+        chip.classList.add("active");
+        const f = chip.dataset.cur;
+        let visibles = 0;
+        grid.querySelectorAll(".card").forEach((card) => {
+          const match = f === "all"
+            || (f === "abiertos" && card.dataset.acceso === "Abierto")
+            || card.dataset.cat === f;
+          card.style.display = match ? "" : "none";
+          if (match) visibles++;
+        });
+        if (empty) empty.style.display = visibles ? "none" : "block";
+      });
+    });
+  }
+
+  const form = document.getElementById("form-suscripcion");
+  if (!form) return;
+  const status = document.getElementById("su-status");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    status.className = "form-status";
+    const data = Object.fromEntries(new FormData(form).entries());
+    if (!data.nombre?.trim() || !data.email?.trim()) {
+      status.className = "form-status error show";
+      status.textContent = "Completá tu nombre y tu email.";
+      return;
+    }
+    const payload = {
+      nombre: data.nombre.trim(),
+      email: data.email.trim(),
+      plan: data.plan || "",
+      interes: data.interes || "",
+      mensaje: data.mensaje || "",
+      fecha: new Date().toISOString(),
+      estado: "Nueva"
+    };
+    const btn = form.querySelector('button[type="submit"]');
+    const original = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "Enviando…";
+    try {
+      await API.create("suscripciones", payload);
+      form.reset();
+      status.className = "form-status ok show";
+      status.textContent = "¡Bienvenida/o al hogar! Te escribimos a " + payload.email + " con los próximos pasos.";
+    } catch (err) {
+      status.className = "form-status error show";
+      status.textContent = "No pudimos registrar tu inscripción: " + err.message + ". Escribinos a hogarenhos@gmail.com.";
     } finally {
       btn.disabled = false;
       btn.textContent = original;

@@ -10,6 +10,9 @@ const ROUTES = {
   "/audiovisuales": { view: viewAudiovisuales, title: "Audiovisuales", bind: bindAudiovisualGrid },
   "/ilustradores": { view: viewIlustradores, title: "Ilustradores", bind: null },
   "/artistas": { view: viewArtistas, title: "Artistas", bind: bindPostulacionForm },
+  "/productora": { view: viewProductora, title: "Productora", bind: bindProductora },
+  "/semillero": { view: viewSemillero, title: "Semillero", bind: bindSemillero },
+  "/cursos": { view: viewCursos, title: "Cursos y suscripción", bind: bindCursos },
   "/comunidad": { view: viewComunidad, title: "Comunidad", bind: bindMensajeForm },
   "/apoyar": { view: viewApoyar, title: "Sostener el hogar", bind: bindApoyar }
 };
