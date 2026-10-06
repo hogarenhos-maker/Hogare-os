@@ -1,9 +1,7 @@
 /* ==========================================================================
-   HOGAREÑOS — Vistas del sitio (renderizado de cada sección)
-   ========================================================================== */
-
+HOGAREÑOS — Vistas del sitio (renderizado de cada sección)
+========================================================================== */
 /* ---------- Utilidades visuales ---------- */
-
 /** Devuelve un gradiente cálido a partir de un tono (hue). */
 function gradient(hue = 30, deg = 150) {
   const h = Number(hue) || 30;
@@ -51,15 +49,9 @@ function fechaLarga(iso) {
 }
 
 /* ---------- Piezas reutilizables ---------- */
-
 /** Encabezado de sección. */
 function sectionHead(eyebrow, title, lead) {
-  return `
-    <header class="section-head">
-      <p class="eyebrow">${esc(eyebrow)}</p>
-      <h2>${title}</h2>
-      ${lead ? `<p class="lead">${lead}</p>` : ""}
-    </header>`;
+  return `<header class="section-head"> <p class="eyebrow">${esc(eyebrow)}</p> <h2>${title}</h2> ${lead ? `<p class="lead">${lead}</p>` : ""} </header>`;
 }
 
 /** Tarjeta de contenido audiovisual / lanzamiento. */
@@ -76,8 +68,8 @@ function contentCard(item, opts = {}) {
   if (item.anio) meta.push(`<span>📅 ${esc(item.anio)}</span>`);
   if (item.duracion) meta.push(`<span>⏱ ${esc(item.duracion)}</span>`);
   if (item.ubicacion) meta.push(`<span>📍 ${esc(item.ubicacion)}</span>`);
-  
-// Si hay un ID de YouTube, embebemos el video. Si no, usamos la portada tipográfica.
+
+  // Si hay un ID de YouTube, embebemos el video. Si no, usamos la portada tipográfica.
   const mediaContent = ytId 
     ? `<div class="card-thumb" style="background:#000; padding:0;">
          <iframe width="100%" height="100%" src="https://www.youtube-nocookie.com/embed/${ytId}" title="${esc(titulo)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy" style="aspect-ratio:16/10; width:100%; height:100%;"></iframe>
@@ -97,281 +89,140 @@ function contentCard(item, opts = {}) {
       ${meta.length ? `<div class="card-meta">${meta.join(" ")}</div>` : ""} 
     </div> 
   </article>`;
-}
 
   // Si no es un embed de YouTube, mantenemos el enlace externo que abre en nueva pestaña
   return !ytId && link
     ? `<a href="${esc(link)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;display:contents;" aria-label="${esc(titulo)} — abrir en YouTube">${body}</a>`
     : body;
+}
 
 /* ==========================================================================
-   VISTA: INICIO
-   ========================================================================== */
+VISTA: INICIO
+========================================================================== */
 async function viewHome() {
   const [proyecto] = await API.list("proyecto");
   const pct = proyecto ? Math.min(100, Math.round((proyecto.recaudado / proyecto.meta) * 100)) : 0;
-
   return `
-  <section class="hero">
-    <div class="container hero-grid">
-      <div>
-        <p class="eyebrow">Sello artístico · Productora musical y audiovisual</p>
-        <h1>Un <em>hogar virtual</em> donde el arte se comparte y se sostiene.</h1>
-        <p class="lead">HOGAREÑOS conecta personas a través de la música y el arte. Grabamos en estudio, registramos canciones en hogares y conciertos, damos espacio a ilustradores y tejemos una red independiente que crece de forma colectiva.</p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="#/audiovisuales" data-link>Explorar audiovisuales</a>
-          <a class="btn btn-ghost" href="#/artistas" data-link>Sumar mi video presentación</a>
-        </div>
-        <div class="hero-stats">
-          <div class="hero-stat"><strong>60+</strong><span>Obras publicadas</span></div>
-          <div class="hero-stat"><strong>4</strong><span>Formatos audiovisuales</span></div>
-          <div class="hero-stat"><strong>1</strong><span>Red, muchas voces</span></div>
-        </div>
-      </div>
-      <div class="hero-art" aria-hidden="true">
-        ${homeIllustration()}
-        <span class="hero-badge"><span class="pulse-dot"></span> Proyecto activo: ${esc(proyecto ? proyecto.nombre : "Voces del hogar")}</span>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="secciones">
-    <div class="container">
-      ${sectionHead("Nuestro hogar", "Las puertas de la casa",
-        "Cada formato es una habitación distinta del mismo hogar. Entrá por donde quieras: todas te conectan con las voces y las manos que hacen posible el sello.")}
-      <div class="section-cards">
-        ${cardEstudio()}
-        ${cardAudiovisuales()}
-        ${cardIlustradores()}
-        ${cardArtistas()}
-        ${cardProductora()}
-        ${cardSemillero()}
-        ${cardCursos()}
-      </div>
-    </div>
-  </section>
-
-  <section class="section-tight">
-    <div class="container">
-      <div class="values">
-        <article class="value"><div class="v-icon">🤝</div><h3>Colectivo</h3><p>Trabajamos en red: músicos, realizadores, productores e ilustradores que se potencian entre sí.</p></article>
-        <article class="value"><div class="v-icon">🕯️</div><h3>Independiente</h3><p>Sin sellos intermediarios. Lo que producimos vuelve a la comunidad que lo hace posible.</p></article>
-        <article class="value"><div class="v-icon">🌱</div><h3>Constructivo</h3><p>Cuidamos las cualidades humanas: el asombro, la ternura, la escucha y el cuidado de la tierra.</p></article>
-        <article class="value"><div class="v-icon">🏠</div><h3>De contención</h3><p>Un espacio sonoro que acompaña. El hogar como refugio y como punto de partida.</p></article>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container">
-      <div class="quote-band">
-        <blockquote>“Un viaje no depende de su tiempo, como cuando una búsqueda se transforma en sueño real.”</blockquote>
-        <cite>Manifiesto Hogareños</cite>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="apoyo-destacado">
-    <div class="container">
-      ${sectionHead("Proyecto en construcción", "Sostengamos el próximo hogar",
-        "Tu aporte hace posible un nuevo registro colectivo. Mirá en qué etapa está y sumate.")}
-      ${proyecto ? projectSummary(proyecto, pct) : '<p class="empty">Pronto habrá un proyecto activo.</p>'}
-    </div>
-  </section>`;
+<section class="hero">
+ <div class="container hero-grid">
+ <div>
+ <p class="eyebrow">Sello artístico · Productora musical y audiovisual</p>
+ <h1>Un <em>hogar virtual</em> donde el arte se comparte y se sostiene.</h1>
+ <p class="lead">HOGAREÑOS conecta personas a través de la música y el arte. Grabamos en estudio, registramos canciones en hogares y conciertos, damos espacio a ilustradores y tejemos una red independiente que crece de forma colectiva.</p>
+ <div class="hero-actions">
+ <a class="btn btn-primary" href="#/audiovisuales" data-link>Explorar audiovisuales</a>
+ <a class="btn btn-ghost" href="#/artistas" data-link>Sumar mi video presentación</a>
+ </div>
+ <div class="hero-stats">
+ <div class="hero-stat"> <strong>60+</strong> <span>Obras publicadas</span> </div>
+ <div class="hero-stat"> <strong>4</strong> <span>Formatos audiovisuales</span> </div>
+ <div class="hero-stat"> <strong>1</strong> <span>Red, muchas voces</span> </div>
+ </div>
+ </div>
+ <div class="hero-art" aria-hidden="true">
+${homeIllustration()}
+ <span class="hero-badge"> <span class="pulse-dot"></span> Proyecto activo: ${esc(proyecto ? proyecto.nombre : "Voces del hogar")}</span>
+ </div>
+ </div>
+ </section>
+<section class="section" id="secciones">
+ <div class="container">
+${sectionHead("Nuestro hogar", "Las puertas de la casa", "Cada formato es una habitación distinta del mismo hogar. Entrá por donde quieras: todas te conectan con las voces y las manos que hacen posible el sello.")}
+ <div class="section-cards">
+${cardEstudio()}
+${cardAudiovisuales()}
+${cardIlustradores()}
+${cardArtistas()}
+${cardProductora()}
+${cardSemillero()}
+${cardCursos()}
+ </div>
+ </div>
+ </section>
+<section class="section-tight">
+ <div class="container">
+ <div class="values">
+ <article class="value"> <div class="v-icon">🤝</div> <h3>Colectivo</h3> <p>Trabajamos en red: músicos, realizadores, productores e ilustradores que se potencian entre sí.</p> </article>
+ <article class="value"> <div class="v-icon">🕯️</div> <h3>Independiente</h3> <p>Sin sellos intermediarios. Lo que producimos vuelve a la comunidad que lo hace posible.</p> </article>
+ <article class="value"> <div class="v-icon">🌱</div> <h3>Constructivo</h3> <p>Cuidamos las cualidades humanas: el asombro, la ternura, la escucha y el cuidado de la tierra.</p> </article>
+ <article class="value"> <div class="v-icon">🏠</div> <h3>De contención</h3> <p>Un espacio sonoro que acompaña. El hogar como refugio y como punto de partida.</p> </article>
+ </div>
+ </div>
+ </section>
+<section class="section">
+ <div class="container">
+ <div class="quote-band">
+ <blockquote>“Un viaje no depende de su tiempo, como cuando una búsqueda se transforma en sueño real.”</blockquote>
+ <cite>Manifiesto Hogareños</cite>
+ </div>
+ </div>
+ </section>
+<section class="section" id="apoyo-destacado">
+ <div class="container">
+${sectionHead("Proyecto en construcción", "Sostengamos el próximo hogar", "Tu aporte hace posible un nuevo registro colectivo. Mirá en qué etapa está y sumate.")}
+${proyecto ? projectSummary(proyecto, pct) : '<p class="empty">Pronto habrá un proyecto activo.</p>'}
+ </div>
+ </section>`;
 }
 
 /* ---------- Tarjetas de las cuatro puertas ---------- */
 function cardEstudio() {
-  return `
-    <a class="home-card" href="#/estudio" data-link>
-      <span class="card-icon" aria-hidden="true">🎙️</span>
-      <h3>Grabaciones en estudio</h3>
-      <p>Nuestras obras producidas y publicadas.</p>
-      <ul class="card-list">
-        <li>Singles</li>
-        <li>EP's</li>
-        <li>Discos</li>
-        <li>Videoclips</li>
-      </ul>
-      <span class="card-more">Ver catálogo →</span>
-    </a>`;
+  return `<a class="home-card" href="#/estudio" data-link> <span class="card-icon" aria-hidden="true">🎙️</span> <h3>Grabaciones en estudio</h3> <p>Nuestras obras producidas y publicadas.</p> <ul class="card-list"> <li>Singles</li> <li>EP's</li> <li>Discos</li> <li>Videoclips</li> </ul> <span class="card-more">Ver catálogo →</span> </a>`;
 }
-
 function cardAudiovisuales() {
-  return `
-    <a class="home-card" href="#/audiovisuales" data-link>
-      <span class="card-icon" aria-hidden="true">🎬</span>
-      <h3>Audiovisuales</h3>
-      <p>Registros en vivo, con la casa y la calle como escenario.</p>
-      <ul class="card-list">
-        <li><strong>HOGARES:</strong> una canción en vivo</li>
-        <li><strong>CONCIERTO:</strong> con espectadores</li>
-        <li><strong>LOCALES:</strong> dos audiovisuales junto a un local</li>
-        <li><strong>SESIONES:</strong> tres canciones en un audiovisual</li>
-      </ul>
-      <span class="card-more">Ver registros →</span>
-    </a>`;
+  return `<a class="home-card" href="#/audiovisuales" data-link> <span class="card-icon" aria-hidden="true">🎬</span> <h3>Audiovisuales</h3> <p>Registros en vivo, con la casa y la calle como escenario.</p> <ul class="card-list"> <li><strong>HOGARES:</strong> una canción en vivo</li> <li><strong>CONCIERTO:</strong> con espectadores</li> <li><strong>LOCALES:</strong> dos audiovisuales junto a un local</li> <li><strong>SESIONES:</strong> tres canciones en un audiovisual</li> </ul> <span class="card-more">Ver registros →</span> </a>`;
 }
-
 function cardIlustradores() {
-  return `
-    <a class="home-card" href="#/ilustradores" data-link>
-      <span class="card-icon" aria-hidden="true">🎨</span>
-      <h3>Ilustradores</h3>
-      <p>“Interpretar el mensaje” de una frase de nuestras canciones.</p>
-      <ul class="card-list">
-        <li>Obras sobre frases del cancionero</li>
-        <li>Muestra colectiva abierta</li>
-      </ul>
-      <span class="card-more">Ver ilustraciones →</span>
-    </a>`;
+  return `<a class="home-card" href="#/ilustradores" data-link> <span class="card-icon" aria-hidden="true">🎨</span> <h3>Ilustradores</h3> <p>“Interpretar el mensaje” de una frase de nuestras canciones.</p> <ul class="card-list"> <li>Obras sobre frases del cancionero</li> <li>Muestra colectiva abierta</li> </ul> <span class="card-more">Ver ilustraciones →</span> </a>`;
 }
-
 function cardArtistas() {
-  return `
-    <a class="home-card" href="#/artistas" data-link>
-      <span class="card-icon" aria-hidden="true">🔥</span>
-      <h3>Artistas</h3>
-      <p>Sumá un video presentación a los contenidos que ya compartís en el sello.</p>
-      <ul class="card-list">
-        <li>Perfil con tu video</li>
-        <li>Ingreso al sello y a la red</li>
-      </ul>
-      <span class="card-more">Sumarme →</span>
-    </a>`;
+  return `<a class="home-card" href="#/artistas" data-link> <span class="card-icon" aria-hidden="true">🔥</span> <h3>Artistas</h3> <p>Sumá un video presentación a los contenidos que ya compartís en el sello.</p> <ul class="card-list"> <li>Perfil con tu video</li> <li>Ingreso al sello y a la red</li> </ul> <span class="card-more">Sumarme →</span> </a>`;
 }
-
 function cardProductora() {
-  return `
-    <a class="home-card" href="#/productora" data-link>
-      <span class="card-icon" aria-hidden="true">🎛️</span>
-      <h3>Productora</h3>
-      <p>Producimos tu obra. Valores claros por cada formato.</p>
-      <ul class="card-list">
-        <li>Single · EP · Disco</li>
-        <li>Videoclip</li>
-        <li>HOGARES · CONCIERTO</li>
-        <li>LOCALES · SESIONES</li>
-      </ul>
-      <span class="card-more">Ver valores →</span>
-    </a>`;
+  return `<a class="home-card" href="#/productora" data-link> <span class="card-icon" aria-hidden="true">🎛️</span> <h3>Productora</h3> <p>Producimos tu obra. Valores claros por cada formato.</p> <ul class="card-list"> <li>Single · EP · Disco</li> <li>Videoclip</li> <li>HOGARES · CONCIERTO</li> <li>LOCALES · SESIONES</li> </ul> <span class="card-more">Ver valores →</span> </a>`;
 }
-
 function cardSemillero() {
-  return `
-    <a class="home-card" href="#/semillero" data-link>
-      <span class="card-icon" aria-hidden="true">🌱</span>
-      <h3>Semillero</h3>
-      <p>Todo el mundo puede crear, cantar, componer y producir.</p>
-      <ul class="card-list">
-        <li>Plantá tu idea, letra o melodía</li>
-        <li>Encontrá con quién crearla</li>
-        <li>Tablón: buscá y ofrecé</li>
-      </ul>
-      <span class="card-more">Entrar al semillero →</span>
-    </a>`;
+  return `<a class="home-card" href="#/semillero" data-link> <span class="card-icon" aria-hidden="true">🌱</span> <h3>Semillero</h3> <p>Todo el mundo puede crear, cantar, componer y producir.</p> <ul class="card-list"> <li>Plantá tu idea, letra o melodía</li> <li>Encontrá con quién crearla</li> <li>Tablón: buscá y ofrecé</li> </ul> <span class="card-more">Entrar al semillero →</span> </a>`;
 }
-
 function cardCursos() {
-  return `
-    <a class="home-card" href="#/cursos" data-link>
-      <span class="card-icon" aria-hidden="true">📚</span>
-      <h3>Cursos</h3>
-      <p>Formación musical y humana. Un compartir nutritivo.</p>
-      <ul class="card-list">
-        <li>Música: canto, guitarra, composición</li>
-        <li>Humanidad: escucha, escritura, bienestar</li>
-        <li>Oficios: audiovisual, ilustración</li>
-        <li>Abiertos y para suscriptores</li>
-      </ul>
-      <span class="card-more">Ver cursos →</span>
-    </a>`;
+  return `<a class="home-card" href="#/cursos" data-link> <span class="card-icon" aria-hidden="true">📚</span> <h3>Cursos</h3> <p>Formación musical y humana. Un compartir nutritivo.</p> <ul class="card-list"> <li>Música: canto, guitarra, composición</li> <li>Humanidad: escucha, escritura, bienestar</li> <li>Oficios: audiovisual, ilustración</li> <li>Abiertos y para suscriptores</li> </ul> <span class="card-more">Ver cursos →</span> </a>`;
 }
 
 /** Resumen del proyecto (usado en inicio y en la sección de apoyo). */
 function projectSummary(p, pct) {
   const money = (n) => `${p.moneda === "USD" ? "US$" : "$"} ${Number(n).toLocaleString("es-AR")}`;
-  const parts = String(p.detalle || "").split(". ").filter(Boolean);
-  return `
-    <div class="project-card">
-      <div class="project-main">
-        <span class="tag" style="background:rgba(255,255,255,.16);color:#ffd98a;">${esc(p.etapa || "En construcción")}</span>
-        <h2 style="margin-top:.7rem;">${esc(p.nombre)}</h2>
-        <p>${esc(p.descripcion)}</p>
-        ${parts.length ? `<ul class="breakdown">${parts.map((s) => `<li><span>${esc(s)}</span></li>`).join("")}</ul>` : ""}
-        <a class="btn btn-ghost-light" href="#/apoyar" data-link style="margin-top:1.6rem;">Quiero aportar →</a>
-      </div>
-      <div class="project-side">
-        <span class="goal">Recaudado</span>
-        <span class="amount">${money(p.recaudado)}</span>
-        <div class="progress" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso del proyecto"><div class="progress-bar" style="width:${pct}%"></div></div>
-        <span class="goal">${pct}% de la meta de ${money(p.meta)}</span>
-      </div>
-    </div>`;
+  const parts = String(p.detalle || "").split(".").filter(Boolean);
+  return `<div class="project-card"> <div class="project-main"> <span class="tag" style="background:rgba(255,255,255,.16);color:#ffd98a;">${esc(p.etapa || "En construcción")}</span> <h2 style="margin-top:.7rem;">${esc(p.nombre)}</h2> <p>${esc(p.descripcion)}</p> ${parts.length ? `<ul class="breakdown">${parts.map((s) => `<li><span>${esc(s)}</span></li>`).join("")}</ul>` : ""} <a class="btn btn-ghost-light" href="#/apoyar" data-link style="margin-top:1.6rem;">Quiero aportar →</a> </div> <div class="project-side"> <span class="goal">Recaudado</span> <span class="amount">${money(p.recaudado)}</span> <div class="progress" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso del proyecto"><div class="progress-bar" style="width:${pct}%"></div></div> <span class="goal">${pct}% de la meta de ${money(p.meta)}</span> </div> </div>`;
 }
 
 /** Ilustración SVG de una casa cálida. */
 function homeIllustration() {
-  return `
-  <svg viewBox="0 0 420 360" role="img" aria-label="Ilustración de una casa cálida al atardecer">
-    <defs>
-      <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#f6d9ac"/><stop offset="55%" stop-color="#e8b47e"/><stop offset="100%" stop-color="#c98a5e"/>
-      </linearGradient>
-      <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#8a9a63"/><stop offset="100%" stop-color="#5e6c42"/>
-      </linearGradient>
-    </defs>
-    <rect width="420" height="360" fill="url(#sky)"/>
-    <circle cx="315" cy="95" r="42" fill="#ffd98a" opacity="0.9"/>
-    <circle cx="315" cy="95" r="62" fill="#ffdf9f" opacity="0.3"/>
-    <path d="M0 300 Q120 240 230 290 T420 285 V360 H0 Z" fill="url(#hill)"/>
-    <path d="M0 330 Q150 295 260 330 T420 325 V360 H0 Z" fill="#4d5a37" opacity="0.75"/>
-    <!-- casa -->
-    <rect x="120" y="200" width="180" height="110" rx="6" fill="#f3e3cd"/>
-    <path d="M104 204 L210 132 L316 204 Z" fill="#b8552f"/>
-    <path d="M104 204 L210 132 L316 204 Z" fill="none" stroke="#8f3f20" stroke-width="3"/>
-    <rect x="188" y="248" width="46" height="62" rx="4" fill="#7a4a2a"/>
-    <circle cx="226" cy="280" r="3" fill="#ffd98a"/>
-    <rect x="140" y="222" width="34" height="30" rx="3" fill="#ffd98a"/>
-    <rect x="248" y="222" width="34" height="30" rx="3" fill="#ffd98a"/>
-    <line x1="157" y1="222" x2="157" y2="252" stroke="#b8552f" stroke-width="2"/>
-    <line x1="265" y1="222" x2="265" y2="252" stroke="#b8552f" stroke-width="2"/>
-    <!-- humo -->
-    <path d="M276 150 q10 -18 -2 -32 q-10 -12 2 -26" fill="none" stroke="#fff" stroke-width="3" opacity="0.6" stroke-linecap="round"/>
-    <!-- notas musicales -->
-    <g fill="#5c3a22" opacity="0.85">
-      <circle cx="96" cy="158" r="5"/><rect x="100" y="120" width="3" height="40"/>
-      <circle cx="336" cy="182" r="5"/><rect x="340" y="146" width="3" height="40"/>
-    </g>
-  </svg>`;
+  return `<svg viewBox="0 0 420 360" role="img" aria-label="Ilustración de una casa cálida al atardecer"> <defs> <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"> <stop offset="0%" stop-color="#f6d9ac"/><stop offset="55%" stop-color="#e8b47e"/><stop offset="100%" stop-color="#c98a5e"/> </linearGradient> <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1"> <stop offset="0%" stop-color="#8a9a63"/><stop offset="100%" stop-color="#5e6c42"/> </linearGradient> </defs> <rect width="420" height="360" fill="url(#sky)"/> <circle cx="315" cy="95" r="42" fill="#ffd98a" opacity="0.9"/> <circle cx="315" cy="95" r="62" fill="#ffdf9f" opacity="0.3"/> <path d="M0 300 Q120 240 230 290 T420 285 V360 H0 Z" fill="url(#hill)"/> <path d="M0 330 Q150 295 260 330 T420 325 V360 H0 Z" fill="#4d5a37" opacity="0.75"/> <rect x="120" y="200" width="180" height="110" rx="6" fill="#f3e3cd"/> <path d="M104 204 L210 132 L316 204 Z" fill="#b8552f"/> <path d="M104 204 L210 132 L316 204 Z" fill="none" stroke="#8f3f20" stroke-width="3"/> <rect x="188" y="248" width="46" height="62" rx="4" fill="#7a4a2a"/> <circle cx="226" cy="280" r="3" fill="#ffd98a"/> <rect x="140" y="222" width="34" height="30" rx="3" fill="#ffd98a"/> <rect x="248" y="222" width="34" height="30" rx="3" fill="#ffd98a"/> <line x1="157" y1="222" x2="157" y2="252" stroke="#b8552f" stroke-width="2"/> <line x1="265" y1="222" x2="265" y2="252" stroke="#b8552f" stroke-width="2"/> <path d="M276 150 q10 -18 -2 -32 q-10 -12 2 -26" fill="none" stroke="#fff" stroke-width="3" opacity="0.6" stroke-linecap="round"/> <g fill="#5c3a22" opacity="0.85"> <circle cx="96" cy="158" r="5"/><rect x="100" y="120" width="3" height="40"/> <circle cx="336" cy="182" r="5"/><rect x="340" y="146" width="3" height="40"/> </g> </svg>`;
 }
 
 /* ==========================================================================
-   VISTA: GRABACIONES EN ESTUDIO
-   ========================================================================== */
+VISTA: GRABACIONES EN ESTUDIO
+========================================================================== */
 async function viewEstudio() {
   const rows = byOrden(await API.list("lanzamientos"));
   return `
-  <section class="section">
-    <div class="container">
-      ${sectionHead("Grabaciones en estudio", "Obras producidas y publicadas",
-        "Singles, EP's, discos y videoclips grabados y producidos por el sello. Cada pieza es una habitación de este hogar sonoro.")}
-      <div class="filters" role="group" aria-label="Filtrar por tipo de lanzamiento">
-        <button class="chip active" data-filter="all">Todos</button>
-        <button class="chip" data-filter="Single">Singles</button>
-        <button class="chip" data-filter="EP">EP's</button>
-        <button class="chip" data-filter="Disco">Discos</button>
-        <button class="chip" data-filter="Videoclip">Videoclips</button>
-      </div>
-      <div class="grid grid-wide" id="estudio-grid">
-        ${rows.map((r) => contentCard(r, {})).join("")}
-      </div>
-      <p class="empty" id="estudio-empty" style="display:none;">No hay obras de este tipo todavía. Pronto sumaremos nuevas grabaciones.</p>
-    </div>
-  </section>`;
+<section class="section">
+ <div class="container">
+${sectionHead("Grabaciones en estudio", "Obras producidas y publicadas", "Singles, EP's, discos y videoclips grabados y producidos por el sello. Cada pieza es una habitación de este hogar sonoro.")}
+ <div class="filters" role="group" aria-label="Filtrar por tipo de lanzamiento">
+ <button class="chip active" data-filter="all">Todos</button>
+ <button class="chip" data-filter="Single">Singles</button>
+ <button class="chip" data-filter="EP">EP's</button>
+ <button class="chip" data-filter="Disco">Discos</button>
+ <button class="chip" data-filter="Videoclip">Videoclips</button>
+ </div>
+ <div class="grid grid-wide" id="estudio-grid">
+${rows.map((r) => contentCard(r, {})).join("")}
+ </div>
+ <p class="empty" id="estudio-empty" style="display:none;">No hay obras de este tipo todavía. Pronto sumaremos nuevas grabaciones.</p>
+ </div>
+ </section>`;
 }
-
 function bindEstudioGrid() {
   const grid = document.getElementById("estudio-grid");
   const empty = document.getElementById("estudio-empty");
@@ -395,47 +246,37 @@ function bindEstudioGrid() {
 }
 
 /* ==========================================================================
-   VISTA: AUDIOVISUALES
-   ========================================================================== */
+VISTA: AUDIOVISUALES
+========================================================================== */
 async function viewAudiovisuales() {
   const rows = byOrden(await API.list("audiovisuales"));
   return `
-  <section class="section">
-    <div class="container">
-      ${sectionHead("Audiovisuales", "La casa, el escenario y la calle",
-        "Cuatro formas de registrar una canción. Elegí un formato y recorré sus historias.")}
-      <div class="filters" role="group" aria-label="Filtrar audiovisuales por formato">
-        <button class="chip active" data-av="all">Todos</button>
-        <button class="chip" data-av="HOGARES">HOGARES</button>
-        <button class="chip" data-av="CONCIERTO">CONCIERTO</button>
-        <button class="chip" data-av="LOCALES">LOCALES</button>
-        <button class="chip" data-av="SESIONES">SESIONES</button>
-      </div>
-
-      <div class="section-cards" style="margin-bottom:2.5rem;">
-        ${avFormatCard("HOGARES", "🏡", "Registro audiovisual en vivo de una canción, en el corazón de un hogar.")}
-        ${avFormatCard("CONCIERTO", "🎤", "Registro de una canción realizada en un concierto o con espectadores.")}
-        ${avFormatCard("LOCALES", "☕", "Registro de dos audiovisuales, compartiendo promoción junto a un local.")}
-        ${avFormatCard("SESIONES", "🎶", "Registro de tres canciones reunidas en un mismo audiovisual.")}
-      </div>
-
-      <div class="grid grid-wide" id="av-grid">
-        ${rows.map((r) => contentCard(r)).join("")}
-      </div>
-      <p class="empty" id="av-empty" style="display:none;">No hay registros en este formato todavía.</p>
-    </div>
-  </section>`;
+<section class="section">
+ <div class="container">
+${sectionHead("Audiovisuales", "La casa, el escenario y la calle", "Cuatro formas de registrar una canción. Elegí un formato y recorré sus historias.")}
+ <div class="filters" role="group" aria-label="Filtrar audiovisuales por formato">
+ <button class="chip active" data-av="all">Todos</button>
+ <button class="chip" data-av="HOGARES">HOGARES</button>
+ <button class="chip" data-av="CONCIERTO">CONCIERTO</button>
+ <button class="chip" data-av="LOCALES">LOCALES</button>
+ <button class="chip" data-av="SESIONES">SESIONES</button>
+ </div>
+  <div class="section-cards" style="margin-bottom:2.5rem;">
+    ${avFormatCard("HOGARES", "🏡", "Registro audiovisual en vivo de una canción, en el corazón de un hogar.")}
+    ${avFormatCard("CONCIERTO", "🎤", "Registro de una canción realizada en un concierto o con espectadores.")}
+    ${avFormatCard("LOCALES", "☕", "Registro de dos audiovisuales, compartiendo promoción junto a un local.")}
+    ${avFormatCard("SESIONES", "🎶", "Registro de tres canciones reunidas en un mismo audiovisual.")}
+  </div>
+  <div class="grid grid-wide" id="av-grid">
+    ${rows.map((r) => contentCard(r)).join("")}
+  </div>
+  <p class="empty" id="av-empty" style="display:none;">No hay registros en este formato todavía.</p>
+</div>
+</section>`;
 }
-
 function avFormatCard(cat, icon, desc) {
-  return `
-    <article class="home-card" style="cursor:default;">
-      <span class="card-icon" aria-hidden="true">${icon}</span>
-      <h3>${cat}</h3>
-      <p>${desc}</p>
-    </article>`;
+  return `<article class="home-card" style="cursor:default;"> <span class="card-icon" aria-hidden="true">${icon}</span> <h3>${cat}</h3> <p>${desc}</p> </article>`;
 }
-
 function bindAudiovisualGrid() {
   const grid = document.getElementById("av-grid");
   const empty = document.getElementById("av-empty");
@@ -459,159 +300,117 @@ function bindAudiovisualGrid() {
 }
 
 /* ==========================================================================
-   VISTA: ILUSTRADORES
-   ========================================================================== */
+VISTA: ILUSTRADORES
+========================================================================== */
 async function viewIlustradores() {
   const rows = byOrden(await API.list("ilustraciones"));
   return `
-  <section class="section">
-    <div class="container">
-      ${sectionHead("Ilustradores", "Interpretar el mensaje",
-        "Convocamos a ilustradores a tomar una frase de alguna canción de nuestro canal y traducirla en imagen. El resultado es una muestra colectiva que se expone y se publica.")}
-
-      <div class="panel" style="margin-bottom:2.5rem;">
-        <h3>¿Cómo participar?</h3>
-        <ul class="card-list" style="font-size:.95rem;columns:2;column-gap:2rem;">
-          <li>Elegí una frase de una canción de nuestro canal.</li>
-          <li>Interpretá su mensaje en una obra propia.</li>
-          <li>Envianos la imagen y una breve reseña.</li>
-          <li>Tu obra se suma a la muestra y a la difusión del sello.</li>
-        </ul>
-        <a class="btn btn-primary" style="margin-top:1rem;" href="mailto:hogarenhos@gmail.com?subject=Ilustradores%20-%20Interpretar%20el%20mensaje">Enviar mi obra</a>
-      </div>
-
-      <div class="grid">
-        ${rows.map((r) => ilusCard(r)).join("")}
-      </div>
-    </div>
-  </section>`;
+<section class="section">
+<div class="container">
+${sectionHead("Ilustradores", "Interpretar el mensaje", "Convocamos a ilustradores a tomar una frase de alguna canción de nuestro canal y traducirla en imagen. El resultado es una muestra colectiva que se expone y se publica.")}
+  <div class="panel" style="margin-bottom:2.5rem;">
+    <h3>¿Cómo participar?</h3>
+    <ul class="card-list" style="font-size:.95rem;columns:2;column-gap:2rem;">
+      <li>Elegí una frase de una canción de nuestro canal.</li>
+      <li>Interpretá su mensaje en una obra propia.</li>
+      <li>Envianos la imagen y una breve reseña.</li>
+      <li>Tu obra se suma a la muestra y a la difusión del sello.</li>
+    </ul>
+    <a class="btn btn-primary" style="margin-top:1rem;" href="mailto:hogarenhos@gmail.com?subject=Ilustradores%20-%20Interpretar%20el%20mensaje">Enviar mi obra</a>
+  </div>
+  <div class="grid">
+    ${rows.map((r) => ilusCard(r)).join("")}
+  </div>
+</div>
+</section>`;
 }
-
 function ilusCard(it) {
   const hue = it.portada_hue ?? 40;
-  return `
-    <article class="card">
-      <div class="card-thumb portrait" style="background:${gradient(hue, 140)}">
-        <span class="card-art" aria-hidden="true">${esc(initials(it.ilustrador))}</span>
-      </div>
-      <div class="card-body">
-        <span class="tag">Ilustración</span>
-        <h3>${esc(it.titulo)}</h3>
-        <span class="card-artist">por ${esc(it.ilustrador)}</span>
-        ${it.frase ? `<p style="font-style:italic;border-left:3px solid var(--ocre);padding-left:.7rem;">“${esc(it.frase)}”</p>` : ""}
-        ${it.cancion ? `<p style="font-size:.82rem;"><strong>Canción:</strong> ${esc(it.cancion)}</p>` : ""}
-        ${it.descripcion ? `<p>${esc(it.descripcion)}</p>` : ""}
-      </div>
-    </article>`;
+  return `<article class="card"> <div class="card-thumb portrait" style="background:${gradient(hue, 140)}"> <span class="card-art" aria-hidden="true">${esc(initials(it.ilustrador))}</span> </div> <div class="card-body"> <span class="tag">Ilustración</span> <h3>${esc(it.titulo)}</h3> <span class="card-artist">por ${esc(it.ilustrador)}</span> ${it.frase ? `<p style="font-style:italic;border-left:3px solid var(--ocre);padding-left:.7rem;">“${esc(it.frase)}”</p>` : ""} ${it.cancion ? `<p style="font-size:.82rem;"> <strong>Canción:</strong> ${esc(it.cancion)}</p>` : ""} ${it.descripcion ? `<p>${esc(it.descripcion)}</p>` : ""} </div> </article>`;
 }
 
 /* ==========================================================================
-   VISTA: ARTISTAS
-   ========================================================================== */
+VISTA: ARTISTAS
+========================================================================== */
 async function viewArtistas() {
   const rows = byOrden(await API.list("artistas"));
   return `
-  <section class="section">
-    <div class="container">
-      ${sectionHead("Artistas", "Las voces del hogar",
-        "Artistas que ya comparten sus contenidos en el sello. Cada uno con un video presentación que abre la puerta a su obra.")}
-      <div class="grid grid-wide">
-        ${rows.map((a) => artistCard(a)).join("")}
-      </div>
-    </div>
-  </section>
-
-  <section class="section-tight" id="postular">
-    <div class="container">
-      ${sectionHead("Sumate al sello", "Agregá tu video presentación",
-        "Si ya compartís contenidos con HOGAREÑOS, sumá un video presentación a tu perfil. Si querés ingresar por primera vez, contanos quién sos: leemos cada mensaje.")}
-      <form class="panel" id="form-postulacion" novalidate>
-        <div class="form-grid">
-          <div class="field">
-            <label for="p-nombre">Nombre o proyecto *</label>
-            <input id="p-nombre" name="nombre" type="text" required autocomplete="name" />
-          </div>
-          <div class="field">
-            <label for="p-email">Email *</label>
-            <input id="p-email" name="email" type="email" required autocomplete="email" />
-          </div>
-          <div class="field">
-            <label for="p-rol">Tu rol</label>
-            <select id="p-rol" name="rol">
-              <option>Músico/a</option>
-              <option>Cantautor/a</option>
-              <option>Banda</option>
-              <option>Realizador/a audiovisual</option>
-              <option>Ilustrador/a</option>
-              <option>Productor/a</option>
-              <option>Local / espacio</option>
-              <option>Otro</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="p-canales">Redes / canales</label>
-            <input id="p-canales" name="canales" type="text" placeholder="Instagram, Spotify, YouTube…" />
-          </div>
-          <div class="field full">
-            <label for="p-video">Link a tu video presentación *</label>
-            <input id="p-video" name="video_url" type="url" required placeholder="https://youtube.com/…" />
-          </div>
-          <div class="field full">
-            <label for="p-mensaje">Contanos de tu obra</label>
-            <textarea id="p-mensaje" name="mensaje" placeholder="Qué hacés, con quién, qué te gustaría compartir en el hogar…"></textarea>
-          </div>
-        </div>
-        <p class="form-note">* Campos obligatorios. Al enviar, tu presentación entra a la lista de la curaduría del sello.</p>
-        <button class="btn btn-primary" type="submit" style="margin-top:1.2rem;">Enviar presentación</button>
-        <div class="form-status" id="p-status" role="status" aria-live="polite"></div>
-      </form>
-    </div>
-  </section>`;
+<section class="section">
+ <div class="container">
+${sectionHead("Artistas", "Las voces del hogar", "Artistas que ya comparten sus contenidos en el sello. Cada uno con un video presentación que abre la puerta a su obra.")}
+ <div class="grid grid-wide">
+${rows.map((a) => artistCard(a)).join("")}
+ </div>
+ </div>
+ </section>
+<section class="section-tight" id="postular">
+ <div class="container">
+${sectionHead("Sumate al sello", "Agregá tu video presentación", "Si ya compartís contenidos con HOGAREÑOS, sumá un video presentación a tu perfil. Si querés ingresar por primera vez, contanos quién sos: leemos cada mensaje.")}
+ <form class="panel" id="form-postulacion" novalidate>
+ <div class="form-grid">
+ <div class="field">
+ <label for="p-nombre">Nombre o proyecto *</label>
+ <input id="p-nombre" name="nombre" type="text" required autocomplete="name" />
+ </div>
+ <div class="field">
+ <label for="p-email">Email *</label>
+ <input id="p-email" name="email" type="email" required autocomplete="email" />
+ </div>
+ <div class="field">
+ <label for="p-rol">Tu rol</label>
+ <select id="p-rol" name="rol">
+ <option>Músico/a</option>
+ <option>Cantautor/a</option>
+ <option>Banda</option>
+ <option>Realizador/a audiovisual</option>
+ <option>Ilustrador/a</option>
+ <option>Productor/a</option>
+ <option>Local / espacio</option>
+ <option>Otro</option>
+ </select>
+ </div>
+ <div class="field">
+ <label for="p-canales">Redes / canales</label>
+ <input id="p-canales" name="canales" type="text" placeholder="Instagram, Spotify, YouTube…" />
+ </div>
+ <div class="field full">
+ <label for="p-video">Link a tu video presentación *</label>
+ <input id="p-video" name="video_url" type="url" required placeholder="https://youtube.com/…" />
+ </div>
+ <div class="field full">
+ <label for="p-mensaje">Contanos de tu obra</label>
+ <textarea id="p-mensaje" name="mensaje" placeholder="Qué hacés, con quién, qué te gustaría compartir en el hogar…"></textarea>
+ </div>
+ </div>
+ <p class="form-note">* Campos obligatorios. Al enviar, tu presentación entra a la lista de la curaduría del sello.</p>
+ <button class="btn btn-primary" type="submit" style="margin-top:1.2rem;">Enviar presentación</button>
+ <div class="form-status" id="p-status" role="status" aria-live="polite"></div>
+ </form>
+ </div>
+ </section>`;
 }
-
 function artistCard(a) {
   const hue = a.id ? (String(a.id).charCodeAt(0) * 7 + 20) % 360 : 30;
   const canales = [
     a.instagram ? `<a href="${esc(a.instagram)}" target="_blank" rel="noopener">Instagram</a>` : "",
     a.spotify ? `<a href="${esc(a.spotify)}" target="_blank" rel="noopener">Spotify</a>` : ""
   ].filter(Boolean).join(" · ");
-  return `
-    <article class="card">
-      <div class="card-thumb" style="background:${gradient(hue, 150)}">
-        <span class="card-art" aria-hidden="true">${esc(initials(a.nombre))}</span>
-        ${a.video_url ? `<a class="play-badge" href="${esc(a.video_url)}" target="_blank" rel="noopener" aria-label="Ver video presentación de ${esc(a.nombre)}"><span class="play-circle">${playIcon()}</span></a>` : ""}
-      </div>
-      <div class="card-body">
-        ${a.rol ? `<span class="tag">${esc(a.rol)}</span>` : ""}
-        <h3>${esc(a.nombre)}</h3>
-        ${a.genero || a.ciudad ? `<span class="card-artist">${esc([a.genero, a.ciudad].filter(Boolean).join(" · "))}</span>` : ""}
-        ${a.bio ? `<p>${esc(a.bio)}</p>` : ""}
-        <div class="card-meta">
-          ${a.video_url ? `<a href="${esc(a.video_url)}" target="_blank" rel="noopener" style="font-weight:600;">▶ Video presentación</a>` : ""}
-          ${canales ? `<span>${canales}</span>` : ""}
-        </div>
-      </div>
-    </article>`;
+  return `<article class="card"> <div class="card-thumb" style="background:${gradient(hue, 150)}"> <span class="card-art" aria-hidden="true">${esc(initials(a.nombre))}</span> ${a.video_url ? `<a class="play-badge" href="${esc(a.video_url)}" target="_blank" rel="noopener" aria-label="Ver video presentación de ${esc(a.nombre)}"> <span class="play-circle">${playIcon()}</span> </a>` : ""} </div> <div class="card-body"> ${a.rol ? `<span class="tag">${esc(a.rol)}</span>` : ""} <h3>${esc(a.nombre)}</h3> ${a.genero || a.ciudad ? `<span class="card-artist">${esc([a.genero, a.ciudad].filter(Boolean).join(" · "))}</span>` : ""} ${a.bio ? `<p>${esc(a.bio)}</p>` : ""} <div class="card-meta"> ${a.video_url ? `<a href="${esc(a.video_url)}" target="_blank" rel="noopener" style="font-weight:600;">▶ Video presentación</a>` : ""} ${canales ? `<span>${canales}</span>` : ""} </div> </div> </article>`;
 }
-
-/** Conecta el formulario de postulaciones con la API. */
 function bindPostulacionForm() {
   const form = document.getElementById("form-postulacion");
   if (!form) return;
   const status = document.getElementById("p-status");
-
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     status.className = "form-status";
     status.textContent = "";
-
     const data = Object.fromEntries(new FormData(form).entries());
     if (!data.nombre?.trim() || !data.email?.trim() || !data.video_url?.trim()) {
       status.className = "form-status error show";
       status.textContent = "Completá nombre, email y el link a tu video presentación.";
       return;
     }
-
     const payload = {
       nombre: data.nombre.trim(),
       email: data.email.trim(),
@@ -622,12 +421,10 @@ function bindPostulacionForm() {
       estado: "Nueva",
       fecha: new Date().toISOString()
     };
-
     const btn = form.querySelector('button[type="submit"]');
     const original = btn.textContent;
     btn.disabled = true;
     btn.textContent = "Enviando…";
-
     try {
       await API.create("postulaciones", payload);
       form.reset();
@@ -644,88 +441,61 @@ function bindPostulacionForm() {
 }
 
 /* ==========================================================================
-   VISTA: COMUNIDAD (la Ronda + muro de mensajes)
-   ========================================================================== */
+VISTA: COMUNIDAD (la Ronda + muro de mensajes)
+========================================================================== */
 async function viewComunidad() {
   const [ronda, mensajes] = await Promise.all([API.list("ronda"), API.list("mensajes")]);
   const orden = [...ronda].sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
   const msgs = [...mensajes].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-
   return `
-  <section class="section">
-    <div class="container">
-      ${sectionHead("Comunidad", "La Ronda del Hogar",
-        "Encuentros abiertos, talleres, muestras y peñas. Momentos para encontrarnos, aprender y sostenernos. Sumate: el hogar se hace entre todos.")}
-      <div class="round-list">
-        ${orden.map((r) => roundItem(r)).join("") || '<p class="empty">Pronto anunciaremos nuevos encuentros.</p>'}
-      </div>
-    </div>
-  </section>
-
-  <section class="section-tight">
-    <div class="container">
-      ${sectionHead("Muro del hogar", "Lo que nos dejan las canciones",
-        "Un espacio para dejar un mensaje, una dedicatoria o simplemente decir presente. Las palabras también construyen.")}
-      <div class="message-grid" id="muro">
-        ${msgs.map((m) => messageNote(m)).join("")}
-      </div>
-      <form class="panel" id="form-mensaje" style="margin-top:2rem;">
-        <h3>Dejá tu mensaje</h3>
-        <div class="form-grid">
-          <div class="field">
-            <label for="m-nombre">Tu nombre *</label>
-            <input id="m-nombre" name="nombre" type="text" required />
-          </div>
-          <div class="field">
-            <label for="m-ciudad">Ciudad</label>
-            <input id="m-ciudad" name="ciudad" type="text" />
-          </div>
-          <div class="field full">
-            <label for="m-mensaje">Mensaje *</label>
-            <textarea id="m-mensaje" name="mensaje" required placeholder="Una frase, una dedicatoria, un gracias…"></textarea>
-          </div>
-        </div>
-        <button class="btn btn-primary" type="submit" style="margin-top:1rem;">Publicar en el muro</button>
-        <div class="form-status" id="m-status" role="status" aria-live="polite"></div>
-      </form>
-    </div>
-  </section>`;
+<section class="section">
+ <div class="container">
+${sectionHead("Comunidad", "La Ronda del Hogar", "Encuentros abiertos, talleres, muestras y peñas. Momentos para encontrarnos, aprender y sostenernos. Sumate: el hogar se hace entre todos.")}
+ <div class="round-list">
+${orden.map((r) => roundItem(r)).join("") || '<p class="empty">Pronto anunciaremos nuevos encuentros.</p>'}
+ </div>
+ </div>
+ </section>
+<section class="section-tight">
+ <div class="container">
+${sectionHead("Muro del hogar", "Lo que nos dejan las canciones", "Un espacio para dejar un mensaje, una dedicatoria o simplemente decir presente. Las palabras también construyen.")}
+ <div class="message-grid" id="muro">
+${msgs.map((m) => messageNote(m)).join("")}
+ </div>
+ <form class="panel" id="form-mensaje" style="margin-top:2rem;">
+ <h3>Dejá tu mensaje</h3>
+ <div class="form-grid">
+ <div class="field">
+ <label for="m-nombre">Tu nombre *</label>
+ <input id="m-nombre" name="nombre" type="text" required />
+ </div>
+ <div class="field">
+ <label for="m-ciudad">Ciudad</label>
+ <input id="m-ciudad" name="ciudad" type="text" />
+ </div>
+ <div class="field full">
+ <label for="m-mensaje">Mensaje *</label>
+ <textarea id="m-mensaje" name="mensaje" required placeholder="Una frase, una dedicatoria, un gracias…"></textarea>
+ </div>
+ </div>
+ <button class="btn btn-primary" type="submit" style="margin-top:1rem;">Publicar en el muro</button>
+ <div class="form-status" id="m-status" role="status" aria-live="polite"></div>
+ </form>
+ </div>
+ </section>`;
 }
-
 function roundItem(r) {
   const { dia, mes } = fechaPartes(r.fecha);
-  return `
-    <article class="round-item">
-      <div class="round-date">
-        <div class="d">${esc(dia)}</div>
-        <div class="m">${esc(mes)}</div>
-      </div>
-      <div>
-        <span class="tag">${esc(r.tipo)} · ${esc(r.modalidad)}</span>
-        <h3 style="margin-top:.4rem;">${esc(r.titulo)}</h3>
-        <p>${esc(r.descripcion)}</p>
-        <p style="font-size:.82rem;margin-top:.4rem;">📍 ${esc(r.lugar)} · ${esc(fechaLarga(r.fecha))}</p>
-      </div>
-      <div>
-        ${r.link ? `<a class="btn btn-ghost btn-sm" href="${esc(r.link)}" target="_blank" rel="noopener">Ver más</a>` : '<span class="supporter">Próximamente</span>'}
-      </div>
-    </article>`;
+  return `<article class="round-item"> <div class="round-date"> <div class="d">${esc(dia)}</div> <div class="m">${esc(mes)}</div> </div> <div> <span class="tag">${esc(r.tipo)} · ${esc(r.modalidad)}</span> <h3 style="margin-top:.4rem;">${esc(r.titulo)}</h3> <p>${esc(r.descripcion)}</p> <p style="font-size:.82rem;margin-top:.4rem;">📍 ${esc(r.lugar)} · ${esc(fechaLarga(r.fecha))}</p> </div> <div> ${r.link ? `<a class="btn btn-ghost btn-sm" href="${esc(r.link)}" target="_blank" rel="noopener">Ver más</a>` : '<span class="supporter">Próximamente</span>'} </div> </article>`;
 }
-
 function messageNote(m) {
-  return `
-    <blockquote class="message-note">
-      <p>“${esc(m.mensaje)}”</p>
-      <footer>— ${esc(m.nombre)}${m.ciudad ? ", " + esc(m.ciudad) : ""}</footer>
-    </blockquote>`;
+  return `<blockquote class="message-note"> <p>“${esc(m.mensaje)}”</p> <footer>— ${esc(m.nombre)}${m.ciudad ? ", " + esc(m.ciudad) : ""}</footer> </blockquote>`;
 }
-
 function bindMensajeForm() {
   const form = document.getElementById("form-mensaje");
   if (!form) return;
   const status = document.getElementById("m-status");
   const muro = document.getElementById("muro");
-
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     status.className = "form-status";
@@ -762,91 +532,82 @@ function bindMensajeForm() {
 }
 
 /* ==========================================================================
-   VISTA: APOYAR (donación al proyecto activo)
-   ========================================================================== */
+VISTA: APOYAR (donación al proyecto activo)
+========================================================================== */
 async function viewApoyar() {
   const [proyectos, aportes] = await Promise.all([API.list("proyecto"), API.list("aportes")]);
   const p = proyectos[0] || null;
   const pct = p ? Math.min(100, Math.round((p.recaudado / p.meta) * 100)) : 0;
   const total = aportes.reduce((s, a) => s + (Number(a.monto) || 0), 0);
-
   return `
-  <section class="section">
-    <div class="container">
-      ${sectionHead("Sostener el hogar", "Doná a un proyecto en construcción",
-        "Cada aporte, grande o pequeño, enciende una nueva grabación. Así se financia de forma transparente y comunitaria.")}
-
-      ${p ? `
-      <div class="project-card">
-        <div class="project-main">
-          <span class="tag" style="background:rgba(255,255,255,.16);color:#ffd98a;">${esc(p.etapa || "En construcción")}</span>
-          <h2 style="margin-top:.7rem;">${esc(p.nombre)}</h2>
-          <p>${esc(p.descripcion)}</p>
-          <p style="font-size:.92rem;">${esc(p.detalle)}</p>
-          <a class="btn btn-ghost-light" style="margin-top:1.2rem;" href="#donar">Elegir mi aporte ↓</a>
-        </div>
-        <div class="project-side">
-          <span class="goal">Recaudado</span>
-          <span class="amount">US$ ${Number(p.recaudado).toLocaleString("es-AR")}</span>
-          <div class="progress" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso"><div class="progress-bar" style="width:${pct}%"></div></div>
-          <span class="goal">${pct}% de la meta de US$ ${Number(p.meta).toLocaleString("es-AR")}</span>
-        </div>
-      </div>` : '<p class="empty">No hay un proyecto activo en este momento.</p>'}
-
-      <div class="panel" id="donar" style="margin-top:2.5rem;">
-        <h3>Elegí tu aporte</h3>
-        <p class="lead" style="font-size:.95rem;">Seleccioná un monto y dejá tu mensaje. Registramos cada aporte para que toda la comunidad vea cómo crece el proyecto.</p>
-        <div class="donate-options" role="group" aria-label="Monto a donar">
-          <button class="amount-btn" data-amount="10">US$ 10</button>
-          <button class="amount-btn active" data-amount="25">US$ 25</button>
-          <button class="amount-btn" data-amount="50">US$ 50</button>
-          <button class="amount-btn" data-amount="100">US$ 100</button>
-        </div>
-        <form id="form-aporte">
-          <div class="form-grid">
-            <div class="field">
-              <label for="a-nombre">Tu nombre o apodo</label>
-              <input id="a-nombre" name="nombre" type="text" placeholder="Dejalo vacío para donar como Anónimo" />
-            </div>
-            <div class="field">
-              <label for="a-monto">Monto (US$)</label>
-              <input id="a-monto" name="monto" type="number" min="1" step="1" value="25" required />
-            </div>
-            <div class="field full">
-              <label for="a-mensaje">Mensaje (opcional)</label>
-              <input id="a-mensaje" name="mensaje" type="text" placeholder="Una dedicatoria para el proyecto…" />
-            </div>
-          </div>
-          <button class="btn btn-primary" type="submit" style="margin-top:1.2rem;">Registrar mi aporte</button>
-          <div class="form-status" id="a-status" role="status" aria-live="polite"></div>
-          <p class="form-note">Al registrarlo, sumamos tu aporte al progreso y a la pared de gracias de abajo. Para concretarlo, te contactamos y coordinamos el medio de pago (transferencia, billetera virtual o link de pago).</p>
-        </form>
-      </div>
-
-      <div style="margin-top:2.5rem;">
-        <h3>Pared de gracias</h3>
-        <p class="lead" style="font-size:.95rem;">${aportes.length} aportes registrados · US$ ${total.toLocaleString("es-AR")} comprometidos por la comunidad.</p>
-        <div class="supporter-wall" id="pared">
-          ${aportes.map((a) => supporterChip(a)).join("")}
-        </div>
-      </div>
-
-      <div class="section-cards" style="margin-top:3rem;">
-        <article class="home-card" style="cursor:default;"><span class="card-icon">🔎</span><h3>Transparencia</h3><p>Publicamos en qué se invierte cada aporte: grabación, edición, arte y difusión.</p></article>
-        <article class="home-card" style="cursor:default;"><span class="card-icon">💌</span><h3>Créditos abiertos</h3><p>Cada persona que aporta aparece en los créditos y accede al estreno anticipado.</p></article>
-        <article class="home-card" style="cursor:default;"><span class="card-icon">🔁</span><h3>Retribución</h3><p>Lo recaudado vuelve a la red: más artistas grabados, más hogares sonoros.</p></article>
-      </div>
-    </div>
-  </section>`;
+<section class="section">
+<div class="container">
+${sectionHead("Sostener el hogar", "Doná a un proyecto en construcción", "Cada aporte, grande o pequeño, enciende una nueva grabación. Así se financia de forma transparente y comunitaria.")}
+  ${p ? `
+   <div class="project-card">
+     <div class="project-main">
+       <span class="tag" style="background:rgba(255,255,255,.16);color:#ffd98a;">${esc(p.etapa || "En construcción")}</span>
+       <h2 style="margin-top:.7rem;">${esc(p.nombre)}</h2>
+       <p>${esc(p.descripcion)}</p>
+       <p style="font-size:.92rem;">${esc(p.detalle)}</p>
+       <a class="btn btn-ghost-light" style="margin-top:1.2rem;" href="#donar">Elegir mi aporte ↓</a>
+     </div>
+     <div class="project-side">
+       <span class="goal">Recaudado</span>
+       <span class="amount">US$ ${Number(p.recaudado).toLocaleString("es-AR")}</span>
+       <div class="progress" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso"><div class="progress-bar" style="width:${pct}%"></div></div>
+       <span class="goal">${pct}% de la meta de US$ ${Number(p.meta).toLocaleString("es-AR")}</span>
+     </div>
+   </div>` : '<p class="empty">No hay un proyecto activo en este momento.</p>'}
+   <div class="panel" id="donar" style="margin-top:2.5rem;">
+     <h3>Elegí tu aporte</h3>
+     <p class="lead" style="font-size:.95rem;">Seleccioná un monto y dejá tu mensaje. Registramos cada aporte para que toda la comunidad vea cómo crece el proyecto.</p>
+     <div class="donate-options" role="group" aria-label="Monto a donar">
+       <button class="amount-btn" data-amount="10">US$ 10</button>
+       <button class="amount-btn active" data-amount="25">US$ 25</button>
+       <button class="amount-btn" data-amount="50">US$ 50</button>
+       <button class="amount-btn" data-amount="100">US$ 100</button>
+     </div>
+     <form id="form-aporte">
+       <div class="form-grid">
+         <div class="field">
+           <label for="a-nombre">Tu nombre o apodo</label>
+           <input id="a-nombre" name="nombre" type="text" placeholder="Dejalo vacío para donar como Anónimo" />
+         </div>
+         <div class="field">
+           <label for="a-monto">Monto (US$)</label>
+           <input id="a-monto" name="monto" type="number" min="1" step="1" value="25" required />
+         </div>
+         <div class="field full">
+           <label for="a-mensaje">Mensaje (opcional)</label>
+           <input id="a-mensaje" name="mensaje" type="text" placeholder="Una dedicatoria para el proyecto…" />
+         </div>
+       </div>
+       <button class="btn btn-primary" type="submit" style="margin-top:1.2rem;">Registrar mi aporte</button>
+       <div class="form-status" id="a-status" role="status" aria-live="polite"></div>
+       <p class="form-note">Al registrarlo, sumamos tu aporte al progreso y a la pared de gracias de abajo. Para concretarlo, te contactamos y coordinamos el medio de pago (transferencia, billetera virtual o link de pago).</p>
+     </form>
+   </div>
+   <div style="margin-top:2.5rem;">
+     <h3>Pared de gracias</h3>
+     <p class="lead" style="font-size:.95rem;">${aportes.length} aportes registrados · US$ ${total.toLocaleString("es-AR")} comprometidos por la comunidad.</p>
+     <div class="supporter-wall" id="pared">
+       ${aportes.map((a) => supporterChip(a)).join("")}
+     </div>
+   </div>
+   <div class="section-cards" style="margin-top:3rem;">
+     <article class="home-card" style="cursor:default;"><span class="card-icon">🔎</span><h3>Transparencia</h3><p>Publicamos en qué se invierte cada aporte: grabación, edición, arte y difusión.</p></article>
+     <article class="home-card" style="cursor:default;"><span class="card-icon">💌</span><h3>Créditos abiertos</h3><p>Cada persona que aporta aparece en los créditos y accede al estreno anticipado.</p></article>
+     <article class="home-card" style="cursor:default;"><span class="card-icon">🔁</span><h3>Retribución</h3><p>Lo recaudado vuelve a la red: más artistas grabados, más hogares sonoros.</p></article>
+   </div>
+ </div>
+</section>`;
 }
-
 function supporterChip(a) {
   const nombre = a.nombre || "Anónimo";
   return `<span class="supporter"><strong>${esc(nombre)}</strong> · US$ ${Number(a.monto).toLocaleString("es-AR")}${a.mensaje ? " — " + esc(a.mensaje) : ""}</span>`;
 }
-
 function bindApoyar() {
-  // Selector de montos
   document.querySelectorAll(".amount-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".amount-btn").forEach((b) => b.classList.remove("active"));
@@ -855,12 +616,10 @@ function bindApoyar() {
       if (input) input.value = btn.dataset.amount;
     });
   });
-
   const form = document.getElementById("form-aporte");
   if (!form) return;
   const status = document.getElementById("a-status");
   const pared = document.getElementById("pared");
-
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     status.className = "form-status";
@@ -898,104 +657,78 @@ function bindApoyar() {
 }
 
 /* ==========================================================================
-   VISTA: PRODUCTORA (servicios y valores)
-   ========================================================================== */
+VISTA: PRODUCTORA (servicios y valores)
+========================================================================== */
 async function viewProductora() {
   const rows = byOrden(await API.list("servicios"));
   const cats = ["Grabaciones en estudio", "Audiovisuales", "Combos"];
-
   return `
-  <section class="section">
-    <div class="container">
-      ${sectionHead("Productora", "Producimos tu obra, de la idea al mundo",
-        "Además de sello, HOGAREÑOS es productora musical y audiovisual. Estos son nuestros valores de referencia por cada formato. Cada proyecto es distinto: escribinos y armamos un presupuesto a medida.")}
-
-      <div class="section-cards" style="margin-bottom:2.5rem;">
-        <article class="home-card" style="cursor:default;"><span class="card-icon">🎙️</span><h3>Estudio propio</h3><p>Grabación, mezcla y master con oído humano y cuidado artesanal.</p></article>
-        <article class="home-card" style="cursor:default;"><span class="card-icon">🎥</span><h3>Equipo audiovisual</h3><p>Registro, edición, color y publicación en el canal del sello.</p></article>
-        <article class="home-card" style="cursor:default;"><span class="card-icon">🤝</span><h3>Trato justo</h3><p>Valores claros, sin sorpresas. La obra es tuya, siempre.</p></article>
-      </div>
-
-      <div class="filters" role="group" aria-label="Filtrar servicios por categoría">
-        <button class="chip active" data-serv="all">Todos</button>
-        ${cats.map((c) => `<button class="chip" data-serv="${esc(c)}">${esc(c)}</button>`).join("")}
-      </div>
-
-      <div class="grid grid-wide" id="serv-grid">
-        ${rows.map((s) => serviceCard(s)).join("")}
-      </div>
-      <p class="empty" id="serv-empty" style="display:none;">No hay servicios en esta categoría.</p>
-    </div>
-  </section>
-
-  <section class="section-tight">
-    <div class="container">
-      ${sectionHead("Cómo trabajamos", "Cuatro pasos, cero vueltas",
-        "Un recorrido simple y transparente desde tu primer mensaje hasta la publicación.")}
-      <div class="values">
-        <article class="value"><div class="v-icon">💬</div><h3>1. Conversamos</h3><p>Nos contás tu idea, tu canción o tu proyecto y qué necesitás.</p></article>
-        <article class="value"><div class="v-icon">📝</div><h3>2. Presupuesto</h3><p>Te enviamos una propuesta clara con valores, plazos y qué incluye.</p></article>
-        <article class="value"><div class="v-icon">🎚️</div><h3>3. Producimos</h3><p>Grabamos, filmamos, editamos y mezclamos acompañándote en cada paso.</p></article>
-        <article class="value"><div class="v-icon">🚀</div><h3>4. Publicamos</h3><p>Lanzamos tu obra en las plataformas y en el canal del sello.</p></article>
-      </div>
-    </div>
-  </section>
-
-  <section class="section-tight" id="presupuesto">
-    <div class="container">
-      ${sectionHead("Pedí tu presupuesto", "Contanos qué querés producir",
-        "Completá el formulario y te respondemos con una propuesta a medida. Si tenés dudas sobre qué servicio elegir, contanos tu idea igual.")}
-      <form class="panel" id="form-solicitud" novalidate>
-        <div class="form-grid">
-          <div class="field">
-            <label for="s-nombre">Nombre o proyecto *</label>
-            <input id="s-nombre" name="nombre" type="text" required />
-          </div>
-          <div class="field">
-            <label for="s-email">Email *</label>
-            <input id="s-email" name="email" type="email" required />
-          </div>
-          <div class="field full">
-            <label for="s-servicio">Servicio que te interesa *</label>
-            <select id="s-servicio" name="servicio" required>
-              ${rows.map((s) => `<option value="${esc(s.nombre)}">${esc(s.nombre)} — US$ ${Number(s.precio).toLocaleString("es-AR")}</option>`).join("")}
-              <option value="No sé todavía / a medida">No sé todavía / a medida</option>
-            </select>
-          </div>
-          <div class="field full">
-            <label for="s-mensaje">Contanos tu proyecto *</label>
-            <textarea id="s-mensaje" name="mensaje" required placeholder="Qué querés producir, cuántas canciones, para cuándo lo necesitás…"></textarea>
-          </div>
-        </div>
-        <p class="form-note">* Campos obligatorios. Los valores son de referencia en USD y pueden ajustarse según el proyecto.</p>
-        <button class="btn btn-primary" type="submit" style="margin-top:1.2rem;">Enviar y pedir presupuesto</button>
-        <div class="form-status" id="s-status" role="status" aria-live="polite"></div>
-      </form>
-    </div>
-  </section>`;
+<section class="section">
+<div class="container">
+${sectionHead("Productora", "Producimos tu obra, de la idea al mundo", "Además de sello, HOGAREÑOS es productora musical y audiovisual. Estos son nuestros valores de referencia por cada formato. Cada proyecto es distinto: escribinos y armamos un presupuesto a medida.")}
+  <div class="section-cards" style="margin-bottom:2.5rem;">
+    <article class="home-card" style="cursor:default;"><span class="card-icon">🎙️</span><h3>Estudio propio</h3><p>Grabación, mezcla y master con oído humano y cuidado artesanal.</p></article>
+    <article class="home-card" style="cursor:default;"><span class="card-icon">🎥</span><h3>Equipo audiovisual</h3><p>Registro, edición, color y publicación en el canal del sello.</p></article>
+    <article class="home-card" style="cursor:default;"><span class="card-icon">🤝</span><h3>Trato justo</h3><p>Valores claros, sin sorpresas. La obra es tuya, siempre.</p></article>
+  </div>
+  <div class="filters" role="group" aria-label="Filtrar servicios por categoría">
+    <button class="chip active" data-serv="all">Todos</button>
+    ${cats.map((c) => `<button class="chip" data-serv="${esc(c)}">${esc(c)}</button>`).join("")}
+  </div>
+  <div class="grid grid-wide" id="serv-grid">
+    ${rows.map((s) => serviceCard(s)).join("")}
+  </div>
+  <p class="empty" id="serv-empty" style="display:none;">No hay servicios en esta categoría.</p>
+</div>
+</section>
+<section class="section-tight">
+ <div class="container">
+${sectionHead("Cómo trabajamos", "Cuatro pasos, cero vueltas", "Un recorrido simple y transparente desde tu primer mensaje hasta la publicación.")}
+ <div class="values">
+ <article class="value"> <div class="v-icon">💬</div> <h3>1. Conversamos</h3> <p>Nos contás tu idea, tu canción o tu proyecto y qué necesitás.</p> </article>
+ <article class="value"> <div class="v-icon">📝</div> <h3>2. Presupuesto</h3> <p>Te enviamos una propuesta clara con valores, plazos y qué incluye.</p> </article>
+ <article class="value"> <div class="v-icon">🎚️</div> <h3>3. Producimos</h3> <p>Grabamos, filmamos, editamos y mezclamos acompañándote en cada paso.</p> </article>
+ <article class="value"> <div class="v-icon">🚀</div> <h3>4. Publicamos</h3> <p>Lanzamos tu obra en las plataformas y en el canal del sello.</p> </article>
+ </div>
+ </div>
+ </section>
+<section class="section-tight" id="presupuesto">
+ <div class="container">
+${sectionHead("Pedí tu presupuesto", "Contanos qué querés producir", "Completá el formulario y te respondemos con una propuesta a medida. Si tenés dudas sobre qué servicio elegir, contanos tu idea igual.")}
+ <form class="panel" id="form-solicitud" novalidate>
+ <div class="form-grid">
+ <div class="field">
+ <label for="s-nombre">Nombre o proyecto *</label>
+ <input id="s-nombre" name="nombre" type="text" required />
+ </div>
+ <div class="field">
+ <label for="s-email">Email *</label>
+ <input id="s-email" name="email" type="email" required />
+ </div>
+ <div class="field full">
+ <label for="s-servicio">Servicio que te interesa *</label>
+ <select id="s-servicio" name="servicio" required>
+${rows.map((s) => `<option value="${esc(s.nombre)}">${esc(s.nombre)} — US$ ${Number(s.precio).toLocaleString("es-AR")}</option>`).join("")}
+ <option value="No sé todavía / a medida">No sé todavía / a medida</option>
+ </select>
+ </div>
+ <div class="field full">
+ <label for="s-mensaje">Contanos tu proyecto *</label>
+ <textarea id="s-mensaje" name="mensaje" required placeholder="Qué querés producir, cuántas canciones, para cuándo lo necesitás…"></textarea>
+ </div>
+ </div>
+ <p class="form-note">* Campos obligatorios. Los valores son de referencia en USD y pueden ajustarse según el proyecto.</p>
+ <button class="btn btn-primary" type="submit" style="margin-top:1.2rem;">Enviar y pedir presupuesto</button>
+ <div class="form-status" id="s-status" role="status" aria-live="polite"></div>
+ </form>
+ </div>
+ </section>`;
 }
-
 function serviceCard(s) {
   const price = `${s.moneda === "USD" ? "US$" : "$"} ${Number(s.precio).toLocaleString("es-AR")}`;
-  const incluye = String(s.incluye || "").split(" · ").filter(Boolean);
-  return `
-    <article class="card" data-categoria="${esc(s.categoria)}">
-      <div class="card-thumb" style="background:${gradient((s.id ? String(s.id).charCodeAt(1) * 33 : 30) % 360, 150)}">
-        <span class="card-art" style="font-size:3rem;" aria-hidden="true">${esc(s.icono || "🎵")}</span>
-        ${s.destacado ? '<span class="tag" style="position:absolute;top:1rem;left:1rem;background:rgba(255,250,243,.95);">Más elegido</span>' : ""}
-      </div>
-      <div class="card-body">
-        <span class="tag">${esc(s.categoria)}</span>
-        <h3>${esc(s.nombre)}</h3>
-        <span class="card-artist" style="font-size:1.5rem;font-family:var(--font-display);color:var(--ink);">${price}</span>
-        <p>${esc(s.descripcion)}</p>
-        ${incluye.length ? `<ul class="card-list" style="margin-top:.3rem;">${incluye.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>` : ""}
-        <div class="card-meta"><span>⏱ Entrega: ${esc(s.entrega)}</span></div>
-        <a class="btn btn-ghost btn-sm" style="margin-top:.6rem;" href="#presupuesto">Consultar →</a>
-      </div>
-    </article>`;
+  const incluye = String(s.incluye || "").split("·").filter(Boolean);
+  return `<article class="card" data-categoria="${esc(s.categoria)}"> <div class="card-thumb" style="background:${gradient((s.id ? String(s.id).charCodeAt(1) * 33 : 30) % 360, 150)}"> <span class="card-art" style="font-size:3rem;" aria-hidden="true">${esc(s.icono || "🎵")}</span> ${s.destacado ? '<span class="tag" style="position:absolute;top:1rem;left:1rem;background:rgba(255,250,243,.95);">Más elegido</span>' : ""} </div> <div class="card-body"> <span class="tag">${esc(s.categoria)}</span> <h3>${esc(s.nombre)}</h3> <span class="card-artist" style="font-size:1.5rem;font-family:var(--font-display);color:var(--ink);">${price}</span> <p>${esc(s.descripcion)}</p> ${incluye.length ? `<ul class="card-list" style="margin-top:.3rem;">${incluye.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>` : ""} <div class="card-meta"><span>⏱ Entrega: ${esc(s.entrega)}</span></div> <a class="btn btn-ghost btn-sm" style="margin-top:.6rem;" href="#presupuesto">Consultar →</a> </div> </article>`;
 }
-
 function bindProductora() {
   const grid = document.getElementById("serv-grid");
   const empty = document.getElementById("serv-empty");
@@ -1015,7 +748,6 @@ function bindProductora() {
       });
     });
   }
-
   const form = document.getElementById("form-solicitud");
   if (!form) return;
   const status = document.getElementById("s-status");
@@ -1056,152 +788,118 @@ function bindProductora() {
 }
 
 /* ==========================================================================
-   VISTA: SEMILLERO (crear, producir, cantar, componer)
-   ========================================================================== */
+VISTA: SEMILLERO (crear, producir, cantar, componer)
+========================================================================== */
 async function viewSemillero() {
   const [semillas, tablon] = await Promise.all([API.list("semillero"), API.list("tablon")]);
   const orden = [...semillas].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
   const busca = tablon.filter((t) => t.modalidad === "Busco");
   const ofrece = tablon.filter((t) => t.modalidad === "Ofrezco");
-
   return `
-  <section class="section">
-    <div class="container">
-      ${sectionHead("Semillero", "Todo el mundo puede crear",
-        "Este es el espacio donde las ideas empiezan. Acá podés plantar una canción a medio hacer, una letra, una melodía, un poema o un proyecto, y encontrar a otras personas para que crezca. Nadie necesita estar \"listo\": el hogar se construye entre todos.")}
-
-      <div class="values" style="margin-bottom:2.5rem;">
-        <article class="value"><div class="v-icon">✍️</div><h3>Escribí</h3><p>Letras, poemas, frases sueltas. Todo lo que tengas ganas de soltar.</p></article>
-        <article class="value"><div class="v-icon">🎼</div><h3>Componé</h3><p>Melodías, acordes, instrumentales. Sumá tu música al hogar.</p></article>
-        <article class="value"><div class="v-icon">🎤</div><h3>Cantá</h3><p>Prestá tu voz a una idea ajena o mostrá la tuya.</p></article>
-        <article class="value"><div class="v-icon">🛠️</div><h3>Producí</h3><p>Mezclá, grabá, ilustrá, difundí. Cada rol hace falta.</p></article>
-      </div>
-
-      <div class="panel" style="margin-bottom:2.5rem;">
-        <h3>Plantá tu semilla</h3>
-        <p class="lead" style="font-size:.95rem;">Contanos qué tenés entre manos. No hace falta que esté terminado: las mejores cosas empiezan a medias.</p>
-        <form id="form-semilla">
-          <div class="form-grid">
-            <div class="field">
-              <label for="se-titulo">Título de tu idea *</label>
-              <input id="se-titulo" name="titulo" type="text" required />
-            </div>
-            <div class="field">
-              <label for="se-autor">Tu nombre o apodo *</label>
-              <input id="se-autor" name="autor" type="text" required />
-            </div>
-            <div class="field">
-              <label for="se-tipo">Tipo</label>
-              <select id="se-tipo" name="tipo">
-                <option>Idea</option><option>Canción</option><option>Letra</option>
-                <option>Poesía</option><option>Melodía</option><option>Instrumental</option>
-                <option>Proyecto</option><option>Grabación</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="se-etiquetas">Etiquetas</label>
-              <input id="se-etiquetas" name="etiquetas" type="text" placeholder="letra, colaboración, folclore…" />
-            </div>
-            <div class="field full">
-              <label for="se-descripcion">Contá tu idea *</label>
-              <textarea id="se-descripcion" name="descripcion" required placeholder="Qué es, en qué etapa está y qué necesitás (una letra, una voz, alguien que mezcle…)"></textarea>
-            </div>
-          </div>
-          <button class="btn btn-primary" type="submit" style="margin-top:1.2rem;">Plantar mi semilla 🌱</button>
-          <div class="form-status" id="se-status" role="status" aria-live="polite"></div>
-        </form>
-      </div>
-
-      <h3 style="margin-bottom:1.2rem;">Semillas en el hogar</h3>
-      <div class="grid grid-wide" id="semillero-grid">
-        ${orden.map((s) => semillaCard(s)).join("")}
-      </div>
-    </div>
-  </section>
-
-  <section class="section-tight">
-    <div class="container">
-      ${sectionHead("El Tablón", "Encontrémonos para crear",
-        "Buscá lo que necesitás o compartí lo que podés dar. La red funciona cuando nos pedimos y nos ofrecemos cosas.")}
-
-      <form class="panel" id="form-tablon" style="margin-bottom:2rem;">
-        <h3>Publicar en el Tablón</h3>
-        <div class="form-grid">
-          <div class="field">
-            <label for="t-modalidad">¿Buscás u ofrecés? *</label>
-            <select id="t-modalidad" name="modalidad" required>
-              <option value="Busco">Busco</option>
-              <option value="Ofrezco">Ofrezco</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="t-titulo">Título *</label>
-            <input id="t-titulo" name="titulo" type="text" required />
-          </div>
-          <div class="field">
-            <label for="t-autor">Tu nombre *</label>
-            <input id="t-autor" name="autor" type="text" required />
-          </div>
-          <div class="field">
-            <label for="t-etiquetas">Etiquetas</label>
-            <input id="t-etiquetas" name="etiquetas" type="text" placeholder="voz, mezcla, banda…" />
-          </div>
-          <div class="field full">
-            <label for="t-detalle">Detalle *</label>
-            <textarea id="t-detalle" name="detalle" required placeholder="Contá qué buscás o qué ofrecés…"></textarea>
-          </div>
-        </div>
-        <button class="btn btn-primary" type="submit" style="margin-top:1.2rem;">Publicar</button>
-        <div class="form-status" id="t-status" role="status" aria-live="polite"></div>
-      </form>
-
-      <div class="board-columns">
-        <div>
-          <h3 class="board-title board-busco">🔎 Buscan</h3>
-          <div id="tablon-busco">${busca.map((t) => tablonItem(t)).join("") || '<p class="empty">Nadie busca todavía. ¡Sé la primera persona!</p>'}</div>
-        </div>
-        <div>
-          <h3 class="board-title board-ofrezco">🌾 Ofrecen</h3>
-          <div id="tablon-ofrezco">${ofrece.map((t) => tablonItem(t)).join("") || '<p class="empty">Nadie ofrece todavía. ¡Animáte!</p>'}</div>
-        </div>
-      </div>
-    </div>
-  </section>`;
+<section class="section">
+ <div class="container">
+${sectionHead("Semillero", "Todo el mundo puede crear", "Este es el espacio donde las ideas empiezan. Acá podés plantar una canción a medio hacer, una letra, una melodía, un poema o un proyecto, y encontrar a otras personas para que crezca. Nadie necesita estar \"listo\": el hogar se construye entre todos.")}
+  <div class="values" style="margin-bottom:2.5rem;">
+     <article class="value"><div class="v-icon">✍️</div><h3>Escribí</h3><p>Letras, poemas, frases sueltas. Todo lo que tengas ganas de soltar.</p></article>
+     <article class="value"><div class="v-icon">🎼</div><h3>Componé</h3><p>Melodías, acordes, instrumentales. Sumá tu música al hogar.</p></article>
+     <article class="value"><div class="v-icon">🎤</div><h3>Cantá</h3><p>Prestá tu voz a una idea ajena o mostrá la tuya.</p></article>
+     <article class="value"><div class="v-icon">🛠️</div><h3>Producí</h3><p>Mezclá, grabá, ilustrá, difundí. Cada rol hace falta.</p></article>
+   </div>
+   <div class="panel" style="margin-bottom:2.5rem;">
+     <h3>Plantá tu semilla</h3>
+     <p class="lead" style="font-size:.95rem;">Contanos qué tenés entre manos. No hace falta que esté terminado: las mejores cosas empiezan a medias.</p>
+     <form id="form-semilla">
+       <div class="form-grid">
+         <div class="field">
+           <label for="se-titulo">Título de tu idea *</label>
+           <input id="se-titulo" name="titulo" type="text" required />
+         </div>
+         <div class="field">
+           <label for="se-autor">Tu nombre o apodo *</label>
+           <input id="se-autor" name="autor" type="text" required />
+         </div>
+         <div class="field">
+           <label for="se-tipo">Tipo</label>
+           <select id="se-tipo" name="tipo">
+             <option>Idea</option><option>Canción</option><option>Letra</option>
+             <option>Poesía</option><option>Melodía</option><option>Instrumental</option>
+             <option>Proyecto</option><option>Grabación</option>
+           </select>
+         </div>
+         <div class="field">
+           <label for="se-etiquetas">Etiquetas</label>
+           <input id="se-etiquetas" name="etiquetas" type="text" placeholder="letra, colaboración, folclore…" />
+         </div>
+         <div class="field full">
+           <label for="se-descripcion">Contá tu idea *</label>
+           <textarea id="se-descripcion" name="descripcion" required placeholder="Qué es, en qué etapa está y qué necesitás (una letra, una voz, alguien que mezcle…)"></textarea>
+         </div>
+       </div>
+       <button class="btn btn-primary" type="submit" style="margin-top:1.2rem;">Plantar mi semilla 🌱</button>
+       <div class="form-status" id="se-status" role="status" aria-live="polite"></div>
+     </form>
+   </div>
+   <h3 style="margin-bottom:1.2rem;">Semillas en el hogar</h3>
+   <div class="grid grid-wide" id="semillero-grid">
+     ${orden.map((s) => semillaCard(s)).join("")}
+   </div>
+ </div>
+</section>
+<section class="section-tight">
+<div class="container">
+${sectionHead("El Tablón", "Encontrémonos para crear", "Buscá lo que necesitás o compartí lo que podés dar. La red funciona cuando nos pedimos y nos ofrecemos cosas.")}
+  <form class="panel" id="form-tablon" style="margin-bottom:2rem;">
+     <h3>Publicar en el Tablón</h3>
+     <div class="form-grid">
+       <div class="field">
+         <label for="t-modalidad">¿Buscás u ofrecés? *</label>
+         <select id="t-modalidad" name="modalidad" required>
+           <option value="Busco">Busco</option>
+           <option value="Ofrezco">Ofrezco</option>
+         </select>
+       </div>
+       <div class="field">
+         <label for="t-titulo">Título *</label>
+         <input id="t-titulo" name="titulo" type="text" required />
+       </div>
+       <div class="field">
+         <label for="t-autor">Tu nombre *</label>
+         <input id="t-autor" name="autor" type="text" required />
+       </div>
+       <div class="field">
+         <label for="t-etiquetas">Etiquetas</label>
+         <input id="t-etiquetas" name="etiquetas" type="text" placeholder="voz, mezcla, banda…" />
+       </div>
+       <div class="field full">
+         <label for="t-detalle">Detalle *</label>
+         <textarea id="t-detalle" name="detalle" required placeholder="Contá qué buscás o qué ofrecés…"></textarea>
+       </div>
+     </div>
+     <button class="btn btn-primary" type="submit" style="margin-top:1.2rem;">Publicar</button>
+     <div class="form-status" id="t-status" role="status" aria-live="polite"></div>
+   </form>
+   <div class="board-columns">
+     <div>
+       <h3 class="board-title board-busco">🔎 Buscan</h3>
+       <div id="tablon-busco">${busca.map((t) => tablonItem(t)).join("") || '<p class="empty">Nadie busca todavía. ¡Sé la primera persona!</p>'}</div>
+     </div>
+     <div>
+       <h3 class="board-title board-ofrezco">🌾 Ofrecen</h3>
+       <div id="tablon-ofrezco">${ofrece.map((t) => tablonItem(t)).join("") || '<p class="empty">Nadie ofrece todavía. ¡Animáte!</p>'}</div>
+     </div>
+   </div>
+ </div>
+</section>`;
 }
-
 function semillaCard(s) {
   const estados = { "Semilla": "🌱", "En germinación": "🌿", "Floreciendo": "🌸", "Cosechada": "🍎" };
   const icono = estados[s.estado] || "🌱";
   const hue = (s.id ? String(s.id).charCodeAt(2) * 29 : 60) % 360;
-  return `
-    <article class="card">
-      <div class="card-thumb" style="background:${gradient(hue, 140)}">
-        <span class="card-art" style="font-size:2.2rem;" aria-hidden="true">${icono}</span>
-      </div>
-      <div class="card-body">
-        <span class="tag">${esc(s.tipo)} · ${esc(s.estado)}</span>
-        <h3>${esc(s.titulo)}</h3>
-        <span class="card-artist">por ${esc(s.autor)}</span>
-        <p>${esc(s.descripcion)}</p>
-        ${s.etiquetas ? `<div class="card-meta">${String(s.etiquetas).split(",").map((e) => `<span>#${esc(e.trim())}</span>`).join("")}</div>` : ""}
-        <a class="btn btn-ghost btn-sm" style="margin-top:.5rem;" href="mailto:hogarenhos@gmail.com?subject=Semillero%20-%20${encodeURIComponent(s.titulo)}">Sumarme a esta idea</a>
-      </div>
-    </article>`;
+  return `<article class="card"> <div class="card-thumb" style="background:${gradient(hue, 140)}"> <span class="card-art" style="font-size:2.2rem;" aria-hidden="true">${icono}</span> </div> <div class="card-body"> <span class="tag">${esc(s.tipo)} · ${esc(s.estado)}</span> <h3>${esc(s.titulo)}</h3> <span class="card-artist">por ${esc(s.autor)}</span> <p>${esc(s.descripcion)}</p> ${s.etiquetas ? `<div class="card-meta">${String(s.etiquetas).split(",").map((e) => `<span>#${esc(e.trim())}</span>`).join("")}</div>` : ""} <a class="btn btn-ghost btn-sm" style="margin-top:.5rem;" href="mailto:hogarenhos@gmail.com?subject=Semillero%20-%20${encodeURIComponent(s.titulo)}">Sumarme a esta idea</a> </div> </article>`;
 }
-
 function tablonItem(t) {
-  return `
-    <article class="board-item">
-      <span class="tag">${esc(t.modalidad)}</span>
-      <h4>${esc(t.titulo)}</h4>
-      <p>${esc(t.detalle)}</p>
-      <div class="card-meta">
-        <span>👤 ${esc(t.autor)}</span>
-        ${t.etiquetas ? `<span>${String(t.etiquetas).split(",").map((e) => "#" + esc(e.trim())).join(" ")}</span>` : ""}
-      </div>
-    </article>`;
+  return `<article class="board-item"> <span class="tag">${esc(t.modalidad)}</span> <h4>${esc(t.titulo)}</h4> <p>${esc(t.detalle)}</p> <div class="card-meta"> <span>👤 ${esc(t.autor)}</span> ${t.etiquetas ? `<span>${String(t.etiquetas).split(",").map((e) => "#" + esc(e.trim())).join("")}</span>` : ""} </div> </article>`;
 }
-
 function bindSemillero() {
   const formS = document.getElementById("form-semilla");
   if (formS) {
@@ -1238,7 +936,6 @@ function bindSemillero() {
       }
     });
   }
-
   const formT = document.getElementById("form-tablon");
   if (formT) {
     const status = document.getElementById("t-status");
@@ -1277,154 +974,107 @@ function bindSemillero() {
 }
 
 /* ==========================================================================
-   VISTA: CURSOS (formación musical, humana y de oficios + suscripción)
-   ========================================================================== */
+VISTA: CURSOS (formación musical, humana y de oficios + suscripción)
+========================================================================== */
 async function viewCursos() {
   const [cursos, planes] = await Promise.all([API.list("cursos"), API.list("planes")]);
   const orden = byOrden(cursos);
   const planesOrden = byOrden(planes);
   const abiertos = orden.filter((c) => c.acceso === "Abierto");
-
   return `
-  <section class="section">
-    <div class="container">
-      ${sectionHead("Cursos", "Formación para el alma y para el oficio",
-        "Un compartir nutritivo para el ser humano. Aprendemos música, pero también aprendemos a escuchar, a escribir, a cuidar(nos) y a producir con nuestras propias manos. Hay cursos abiertos para toda la comunidad y cursos exclusivos para quienes sostienen el hogar con una suscripción.")}
-
-      <div class="values" style="margin-bottom:2.5rem;">
-        <article class="value"><div class="v-icon">🎵</div><h3>Música</h3><p>Canto, guitarra, composición, producción. El oficio de hacer canciones.</p></article>
-        <article class="value"><div class="v-icon">🫀</div><h3>Humanidad</h3><p>Escucha, escritura, voz y bienestar. Formación para la vida y los vínculos.</p></article>
-        <article class="value"><div class="v-icon">🛠️</div><h3>Oficios</h3><p>Audiovisual, ilustración. Herramientas para difundir tu obra con tus manos.</p></article>
-      </div>
-
-      ${abiertos.length ? `
-      <div class="panel" style="margin-bottom:2.5rem;border-left:5px solid var(--sage);">
-        <span class="tag" style="background:rgba(111,125,84,.16);color:#4c5738;">Abiertos y gratuitos</span>
-        <h3 style="margin-top:.6rem;">Cursos para toda la comunidad</h3>
-        <p class="lead" style="font-size:.95rem;">Creemos que el conocimiento se comparte. Estos cursos son libres y no requieren suscripción: solo ganas de estar.</p>
-        <div class="grid grid-wide" style="margin-top:1.2rem;">
-          ${abiertos.map((c) => courseCard(c, true)).join("")}
-        </div>
-      </div>` : ""}
-
-      <div class="filters" role="group" aria-label="Filtrar cursos por categoría">
-        <button class="chip active" data-cur="all">Todos</button>
-        <button class="chip" data-cur="Música">Música</button>
-        <button class="chip" data-cur="Humanidad">Humanidad</button>
-        <button class="chip" data-cur="Oficios">Oficios</button>
-        <button class="chip" data-cur="abiertos">Abiertos</button>
-      </div>
-
-      <div class="grid grid-wide" id="cursos-grid">
-        ${orden.map((c) => courseCard(c)).join("")}
-      </div>
-      <p class="empty" id="cursos-empty" style="display:none;">No hay cursos en esta categoría todavía.</p>
-    </div>
-  </section>
-
-  <section class="section-tight" id="suscripcion">
-    <div class="container">
-      ${sectionHead("Suscripción", "Sé parte del hogar",
-        "Suscribirte es sostener la red y, a cambio, recibir formación, música y comunidad. Un intercambio nutritivo: tu aporte mensual hace posible que más artistas graben y que el conocimiento circule.")}
-      <div class="plan-grid">
-        ${planesOrden.map((p) => planCard(p)).join("")}
-      </div>
-      <p class="form-note" style="text-align:center;max-width:60ch;margin:1.6rem auto 0;">Al suscribirte te contactamos para coordinar el medio de pago (transferencia, billetera virtual o link de pago). Tu lugar en el hogar queda reservado desde el primer mensaje.</p>
-    </div>
-  </section>
-
-  <section class="section-tight" id="alta">
-    <div class="container">
-      ${sectionHead("Sumate", "Quiero ser parte de los Cursos",
-        "Completá tus datos y contanos qué te interesa. Te escribimos con los próximos pasos y el acceso.")}
-      <form class="panel" id="form-suscripcion" novalidate>
-        <div class="form-grid">
-          <div class="field">
-            <label for="su-nombre">Nombre y apellido *</label>
-            <input id="su-nombre" name="nombre" type="text" required autocomplete="name" />
-          </div>
-          <div class="field">
-            <label for="su-email">Email *</label>
-            <input id="su-email" name="email" type="email" required autocomplete="email" />
-          </div>
-          <div class="field">
-            <label for="su-plan">Plan de suscripción *</label>
-            <select id="su-plan" name="plan" required>
-              ${planesOrden.map((p) => `<option value="${esc(p.nombre)}">${esc(p.nombre)} — US$ ${Number(p.precio).toLocaleString("es-AR")} ${esc(p.periodo)}</option>`).join("")}
-              <option value="Solo cursos abiertos">Solo cursos abiertos (gratis)</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="su-interes">Me interesa sobre todo</label>
-            <select id="su-interes" name="interes">
-              <option>Música</option>
-              <option>Humanidad</option>
-              <option>Oficios</option>
-              <option>Un poco de todo</option>
-            </select>
-          </div>
-          <div class="field full">
-            <label for="su-mensaje">Contanos qué buscás</label>
-            <textarea id="su-mensaje" name="mensaje" placeholder="Qué te gustaría aprender o compartir en el hogar…"></textarea>
-          </div>
-        </div>
-        <p class="form-note">* Campos obligatorios. Esta es una pre-inscripción: no se cobra nada desde esta página.</p>
-        <button class="btn btn-primary" type="submit" style="margin-top:1.2rem;">Quiero sumarme</button>
-        <div class="form-status" id="su-status" role="status" aria-live="polite"></div>
-      </form>
-    </div>
-  </section>`;
+<section class="section">
+<div class="container">
+${sectionHead("Cursos", "Formación para el alma y para el oficio", "Un compartir nutritivo para el ser humano. Aprendemos música, pero también aprendemos a escuchar, a escribir, a cuidar(nos) y a producir con nuestras propias manos. Hay cursos abiertos para toda la comunidad y cursos exclusivos para quienes sostienen el hogar con una suscripción.")}
+  <div class="values" style="margin-bottom:2.5rem;">
+     <article class="value"><div class="v-icon">🎵</div><h3>Música</h3><p>Canto, guitarra, composición, producción. El oficio de hacer canciones.</p></article>
+     <article class="value"><div class="v-icon">🫀</div><h3>Humanidad</h3><p>Escucha, escritura, voz y bienestar. Formación para la vida y los vínculos.</p></article>
+     <article class="value"><div class="v-icon">🛠️</div><h3>Oficios</h3><p>Audiovisual, ilustración. Herramientas para difundir tu obra con tus manos.</p></article>
+   </div>
+   ${abiertos.length ? `
+   <div class="panel" style="margin-bottom:2.5rem;border-left:5px solid var(--sage);">
+     <span class="tag" style="background:rgba(111,125,84,.16);color:#4c5738;">Abiertos y gratuitos</span>
+     <h3 style="margin-top:.6rem;">Cursos para toda la comunidad</h3>
+     <p class="lead" style="font-size:.95rem;">Creemos que el conocimiento se comparte. Estos cursos son libres y no requieren suscripción: solo ganas de estar.</p>
+     <div class="grid grid-wide" style="margin-top:1.2rem;">
+       ${abiertos.map((c) => courseCard(c, true)).join("")}
+     </div>
+   </div>` : ""}
+   <div class="filters" role="group" aria-label="Filtrar cursos por categoría">
+     <button class="chip active" data-cur="all">Todos</button>
+     <button class="chip" data-cur="Música">Música</button>
+     <button class="chip" data-cur="Humanidad">Humanidad</button>
+     <button class="chip" data-cur="Oficios">Oficios</button>
+     <button class="chip" data-cur="abiertos">Abiertos</button>
+   </div>
+   <div class="grid grid-wide" id="cursos-grid">
+     ${orden.map((c) => courseCard(c)).join("")}
+   </div>
+   <p class="empty" id="cursos-empty" style="display:none;">No hay cursos en esta categoría todavía.</p>
+ </div>
+</section>
+<section class="section-tight" id="suscripcion">
+ <div class="container">
+${sectionHead("Suscripción", "Sé parte del hogar", "Suscribirte es sostener la red y, a cambio, recibir formación, música y comunidad. Un intercambio nutritivo: tu aporte mensual hace posible que más artistas graben y que el conocimiento circule.")}
+ <div class="plan-grid">
+${planesOrden.map((p) => planCard(p)).join("")}
+ </div>
+ <p class="form-note" style="text-align:center;max-width:60ch;margin:1.6rem auto 0;">Al suscribirte te contactamos para coordinar el medio de pago (transferencia, billetera virtual o link de pago). Tu lugar en el hogar queda reservado desde el primer mensaje.</p>
+ </div>
+ </section>
+<section class="section-tight" id="alta">
+ <div class="container">
+${sectionHead("Sumate", "Quiero ser parte de los Cursos", "Completá tus datos y contanos qué te interesa. Te escribimos con los próximos pasos y el acceso.")}
+ <form class="panel" id="form-suscripcion" novalidate>
+ <div class="form-grid">
+ <div class="field">
+ <label for="su-nombre">Nombre y apellido *</label>
+ <input id="su-nombre" name="nombre" type="text" required autocomplete="name" />
+ </div>
+ <div class="field">
+ <label for="su-email">Email *</label>
+ <input id="su-email" name="email" type="email" required autocomplete="email" />
+ </div>
+ <div class="field">
+ <label for="su-plan">Plan de suscripción *</label>
+ <select id="su-plan" name="plan" required>
+${planesOrden.map((p) => `<option value="${esc(p.nombre)}">${esc(p.nombre)} — US$ ${Number(p.precio).toLocaleString("es-AR")} ${esc(p.periodo)}</option>`).join("")}
+ <option value="Solo cursos abiertos">Solo cursos abiertos (gratis)</option>
+ </select>
+ </div>
+ <div class="field">
+ <label for="su-interes">Me interesa sobre todo</label>
+ <select id="su-interes" name="interes">
+ <option>Música</option>
+ <option>Humanidad</option>
+ <option>Oficios</option>
+ <option>Un poco de todo</option>
+ </select>
+ </div>
+ <div class="field full">
+ <label for="su-mensaje">Contanos qué buscás</label>
+ <textarea id="su-mensaje" name="mensaje" placeholder="Qué te gustaría aprender o compartir en el hogar…"></textarea>
+ </div>
+ </div>
+ <p class="form-note">* Campos obligatorios. Esta es una pre-inscripción: no se cobra nada desde esta página.</p>
+ <button class="btn btn-primary" type="submit" style="margin-top:1.2rem;">Quiero sumarme</button>
+ <div class="form-status" id="su-status" role="status" aria-live="polite"></div>
+ </form>
+ </div>
+ </section>`;
 }
-
 function courseCard(c, abierto = false) {
   const isOpen = c.acceso === "Abierto";
   const precio = isOpen
     ? '<span class="price-free">Gratis</span>'
     : `<span class="card-artist" style="font-size:1.35rem;font-family:var(--font-display);color:var(--ink);">US$ ${Number(c.precio).toLocaleString("es-AR")}</span> <span style="font-size:.78rem;color:var(--ink-soft);">· incluido en la suscripción</span>`;
-  const temario = String(c.temario || "").split(" · ").filter(Boolean);
+  const temario = String(c.temario || "").split("·").filter(Boolean);
   const hue = (c.id ? String(c.id).charCodeAt(1) * 37 : 40) % 360;
-  return `
-    <article class="card" data-cat="${esc(c.categoria)}" data-acceso="${esc(c.acceso)}">
-      <div class="card-thumb" style="background:${gradient(hue, 150)}">
-        <span class="card-art" style="font-size:2.6rem;" aria-hidden="true">${esc(c.icono || "📚")}</span>
-        <span class="tag" style="position:absolute;top:1rem;left:1rem;background:${isOpen ? "rgba(255,250,243,.95)" : "rgba(43,33,26,.82)"};color:${isOpen ? "#4c5738" : "#ffd98a"};">${isOpen ? "Abierto" : "Suscriptores"}</span>
-        ${c.destacado ? '<span class="tag" style="position:absolute;top:1rem;right:1rem;background:rgba(255,250,243,.95);">★ Destacado</span>' : ""}
-      </div>
-      <div class="card-body">
-        <span class="tag">${esc(c.categoria)} · ${esc(c.nivel)}</span>
-        <h3>${esc(c.titulo)}</h3>
-        <span class="card-artist">con ${esc(c.docente)}</span>
-        <p>${esc(c.descripcion)}</p>
-        ${temario.length ? `<ul class="card-list" style="margin-top:.3rem;">${temario.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
-        <div class="card-meta">
-          <span>⏱ ${esc(c.duracion)}</span>
-          <span>💻 ${esc(c.modalidad)}</span>
-          ${c.cupos ? `<span>👥 ${esc(c.cupos)} cupos</span>` : ""}
-        </div>
-        <div style="margin-top:.6rem;">${precio}</div>
-        <a class="btn ${isOpen ? "btn-ghost" : "btn-primary"} btn-sm" style="margin-top:.7rem;" href="${isOpen ? "mailto:hogarenhos@gmail.com?subject=Curso%20abierto:%20" + encodeURIComponent(c.titulo) : "#alta"}">${isOpen ? "Inscribirme gratis" : "Quiero acceder"}</a>
-      </div>
-    </article>`;
+  return `<article class="card" data-cat="${esc(c.categoria)}" data-acceso="${esc(c.acceso)}"> <div class="card-thumb" style="background:${gradient(hue, 150)}"> <span class="card-art" style="font-size:2.6rem;" aria-hidden="true">${esc(c.icono || "📚")}</span> <span class="tag" style="position:absolute;top:1rem;left:1rem;background:${isOpen ? "rgba(255,250,243,.95)" : "rgba(43,33,26,.82)"};color:${isOpen ? "#4c5738" : "#ffd98a"};">${isOpen ? "Abierto" : "Suscriptores"}</span> ${c.destacado ? '<span class="tag" style="position:absolute;top:1rem;right:1rem;background:rgba(255,250,243,.95);">★ Destacado</span>' : ""} </div> <div class="card-body"> <span class="tag">${esc(c.categoria)} · ${esc(c.nivel)}</span> <h3>${esc(c.titulo)}</h3> <span class="card-artist">con ${esc(c.docente)}</span> <p>${esc(c.descripcion)}</p> ${temario.length ? `<ul class="card-list" style="margin-top:.3rem;">${temario.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""} <div class="card-meta"> <span>⏱ ${esc(c.duracion)}</span> <span>💻 ${esc(c.modalidad)}</span> ${c.cupos ? `<span>👥 ${esc(c.cupos)} cupos</span>` : ""} </div> <div style="margin-top:.6rem;">${precio}</div> <a class="btn ${isOpen ? "btn-ghost" : "btn-primary"} btn-sm" style="margin-top:.7rem;" href="${isOpen ? "mailto:hogarenhos@gmail.com?subject=Curso%20abierto:%20" + encodeURIComponent(c.titulo) : "#alta"}">${isOpen ? "Inscribirme gratis" : "Quiero acceder"}</a> </div> </article>`;
 }
-
 function planCard(p) {
-  const beneficios = String(p.beneficios || "").split(" · ").filter(Boolean);
-  return `
-    <article class="plan-card ${p.destacado ? "plan-featured" : ""}">
-      ${p.destacado ? '<span class="plan-ribbon">Más elegido</span>' : ""}
-      <h3>${esc(p.nombre)}</h3>
-      <p class="plan-publico">${esc(p.publico)}</p>
-      <div class="plan-price">
-        <span class="amount">US$ ${Number(p.precio).toLocaleString("es-AR")}</span>
-        <span class="period">${esc(p.periodo)}</span>
-      </div>
-      <ul class="plan-benefits">
-        ${beneficios.map((b) => `<li>${esc(b)}</li>`).join("")}
-      </ul>
-      <a class="btn ${p.destacado ? "btn-primary" : "btn-ghost"}" href="#alta" style="width:100%;">Elegir ${esc(p.nombre)}</a>
-    </article>`;
+  const beneficios = String(p.beneficios || "").split("·").filter(Boolean);
+  return `<article class="plan-card ${p.destacado ? "plan-featured" : ""}"> ${p.destacado ? '<span class="plan-ribbon">Más elegido</span>' : ""} <h3>${esc(p.nombre)}</h3> <p class="plan-publico">${esc(p.publico)}</p> <div class="plan-price"> <span class="amount">US$ ${Number(p.precio).toLocaleString("es-AR")}</span> <span class="period">${esc(p.periodo)}</span> </div> <ul class="plan-benefits"> ${beneficios.map((b) => `<li>${esc(b)}</li>`).join("")} </ul> <a class="btn ${p.destacado ? "btn-primary" : "btn-ghost"}" href="#alta" style="width:100%;">Elegir ${esc(p.nombre)}</a> </article>`;
 }
-
 function bindCursos() {
   const grid = document.getElementById("cursos-grid");
   const empty = document.getElementById("cursos-empty");
@@ -1436,9 +1086,7 @@ function bindCursos() {
         const f = chip.dataset.cur;
         let visibles = 0;
         grid.querySelectorAll(".card").forEach((card) => {
-          const match = f === "all"
-            || (f === "abiertos" && card.dataset.acceso === "Abierto")
-            || card.dataset.cat === f;
+          const match = f === "all" || (f === "abiertos" && card.dataset.acceso === "Abierto") || card.dataset.cat === f;
           card.style.display = match ? "" : "none";
           if (match) visibles++;
         });
@@ -1446,7 +1094,6 @@ function bindCursos() {
       });
     });
   }
-
   const form = document.getElementById("form-suscripcion");
   if (!form) return;
   const status = document.getElementById("su-status");
@@ -1488,16 +1135,16 @@ function bindCursos() {
 }
 
 /* ==========================================================================
-   VISTA: 404
-   ========================================================================== */
+VISTA: 404
+========================================================================== */
 function viewNotFound() {
   return `
-  <section class="section">
-    <div class="container" style="text-align:center;max-width:560px;">
-      <p class="eyebrow">Puerta cerrada</p>
-      <h1>Esa habitación no existe (todavía)</h1>
-      <p class="lead" style="margin:1rem auto 2rem;">Volvé al living y elegí otra puerta del hogar.</p>
-      <a class="btn btn-primary" href="#/" data-link>Volver al inicio</a>
-    </div>
-  </section>`;
+<section class="section">
+ <div class="container" style="text-align:center;max-width:560px;">
+ <p class="eyebrow">Puerta cerrada</p>
+ <h1>Esa habitación no existe (todavía)</h1>
+ <p class="lead" style="margin:1rem auto 2rem;">Volvé al living y elegí otra puerta del hogar.</p>
+ <a class="btn btn-primary" href="#/" data-link>Volver al inicio</a>
+ </div>
+ </section>`;
 }
