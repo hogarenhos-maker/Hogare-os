@@ -25,6 +25,14 @@ function playIcon() {
   return '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
 }
 
+/** Obtiene el ID de un video de YouTube para embeberlo. */
+function getYouTubeId(url) {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+}
+
 /** Fecha legible en español (día + mes corto). */
 function fechaPartes(iso) {
   const d = new Date(iso);
@@ -62,31 +70,39 @@ function contentCard(item, opts = {}) {
   const hue = item.portada_hue ?? 30;
   const link = item.link || item.video_url || "";
   const desc = item.descripcion || item.bio || "";
+  const ytId = getYouTubeId(link); // Verificamos si es un video de YouTube
 
   const meta = [];
   if (item.anio) meta.push(`<span>📅 ${esc(item.anio)}</span>`);
   if (item.duracion) meta.push(`<span>⏱ ${esc(item.duracion)}</span>`);
   if (item.ubicacion) meta.push(`<span>📍 ${esc(item.ubicacion)}</span>`);
+  
+// Si hay un ID de YouTube, embebemos el video. Si no, usamos la portada tipográfica.
+  const mediaContent = ytId 
+    ? `<div class="card-thumb" style="background:#000; padding:0;">
+         <iframe width="100%" height="100%" src="https://www.youtube-nocookie.com/embed/${ytId}" title="${esc(titulo)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy" style="aspect-ratio:16/10; width:100%; height:100%;"></iframe>
+       </div>`
+    : `<div class="card-thumb" style="background:${gradient(hue)}"> 
+         <span class="card-art" aria-hidden="true">${esc(initials(titulo))}</span> 
+         ${link ? `<div class="play-badge" aria-hidden="true"><span class="play-circle">${playIcon()}</span></div>` : ""}
+       </div>`;
 
-  const body = `
-    <article class="card">
-      <div class="card-thumb" style="background:${gradient(hue)}">
-        <span class="card-art" aria-hidden="true">${esc(initials(titulo))}</span>
-        <div class="play-badge" aria-hidden="true"><span class="play-circle">${playIcon()}</span></div>
-      </div>
-      <div class="card-body">
-        ${tag ? `<span class="tag">${esc(tag)}</span>` : ""}
-        <h3>${esc(titulo)}</h3>
-        ${sub ? `<span class="card-artist">${esc(sub)}</span>` : ""}
-        ${desc ? `<p>${esc(desc)}</p>` : ""}
-        ${meta.length ? `<div class="card-meta">${meta.join("")}</div>` : ""}
-      </div>
-    </article>`;
+  const body = `<article class="card"> 
+    ${mediaContent}
+    <div class="card-body"> 
+      ${tag ? `<span class="tag">${esc(tag)}</span>` : ""} 
+      <h3>${esc(titulo)}</h3> 
+      ${sub ? `<span class="card-artist">${esc(sub)}</span>` : ""} 
+      ${desc ? `<p>${esc(desc)}</p>` : ""} 
+      ${meta.length ? `<div class="card-meta">${meta.join(" ")}</div>` : ""} 
+    </div> 
+  </article>`;
+}
 
-  return link
+  // Si no es un embed de YouTube, mantenemos el enlace externo que abre en nueva pestaña
+  return !ytId && link
     ? `<a href="${esc(link)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;display:contents;" aria-label="${esc(titulo)} — abrir en YouTube">${body}</a>`
     : body;
-}
 
 /* ==========================================================================
    VISTA: INICIO
@@ -114,7 +130,7 @@ async function viewHome() {
       </div>
       <div class="hero-art" aria-hidden="true">
         ${homeIllustration()}
-        <span class="hero-badge"><span class="pulse-dot"></span> Proyecto activo: ${esc(proyecto ? proyecto.nombre : "Chan")}</span>
+        <span class="hero-badge"><span class="pulse-dot"></span> Proyecto activo: ${esc(proyecto ? proyecto.nombre : "Voces del hogar")}</span>
       </div>
     </div>
   </section>
