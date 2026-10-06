@@ -114,7 +114,7 @@ async function viewHome() {
       </div>
       <div class="hero-art" aria-hidden="true">
         ${homeIllustration()}
-        <span class="hero-badge"><span class="pulse-dot"></span> Proyecto activo: ${esc(proyecto ? proyecto.nombre : "Chn")}</span>
+        <span class="hero-badge"><span class="pulse-dot"></span> Proyecto activo: ${esc(proyecto ? proyecto.nombre : "Chan")}</span>
       </div>
     </div>
   </section>
