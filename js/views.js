@@ -208,12 +208,12 @@ async function viewEstudio() {
   return `
 <section class="section">
  <div class="container">
-${sectionHead("Grabaciones en estudio", "Obras producidas y publicadas", "Singles, EP's, discos y videoclips grabados y producidos por el sello. Cada pieza es una habitación de este hogar sonoro.")}
+${sectionHead("Grabaciones en estudio", "Singles, EP's, Álbum's y Videoclips", "El estudio no es el fin, es el transporte para realizar un viaje: un espacio para habitar el proceso hasta que la necesidad técnica se alinee con tu deseo más auténtico.")}
  <div class="filters" role="group" aria-label="Filtrar por tipo de lanzamiento">
  <button class="chip active" data-filter="all">Todos</button>
  <button class="chip" data-filter="Single">Singles</button>
  <button class="chip" data-filter="EP">EP's</button>
- <button class="chip" data-filter="Disco">Discos</button>
+ <button class="chip" data-filter="Álbum">Álbum's</button>
  <button class="chip" data-filter="Videoclip">Videoclips</button>
  </div>
  <div class="grid grid-wide" id="estudio-grid">
