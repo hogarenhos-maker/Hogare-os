@@ -253,7 +253,7 @@ async function viewAudiovisuales() {
   return `
 <section class="section">
  <div class="container">
-${sectionHead("Audiovisuales", "La casa, el escenario y la calle", "Cuatro formas de registrar una canción. Elegí un formato y recorré sus historias.")}
+${sectionHead("Audiovisuales", "En vivo", "Cuatro formatos para registrar, interpretar y crear en el Planeta Tierra como Hogar.")}
  <div class="filters" role="group" aria-label="Filtrar audiovisuales por formato">
  <button class="chip active" data-av="all">Todos</button>
  <button class="chip" data-av="HOGARES">HOGARES</button>
@@ -262,10 +262,10 @@ ${sectionHead("Audiovisuales", "La casa, el escenario y la calle", "Cuatro forma
  <button class="chip" data-av="SESIONES">SESIONES</button>
  </div>
   <div class="section-cards" style="margin-bottom:2.5rem;">
-    ${avFormatCard("HOGARES", "🏡", "Registro audiovisual en vivo de una canción, en el corazón de un hogar.")}
-    ${avFormatCard("CONCIERTO", "🎤", "Registro de una canción realizada en un concierto o con espectadores.")}
-    ${avFormatCard("LOCALES", "☕", "Registro de dos audiovisuales, compartiendo promoción junto a un local.")}
-    ${avFormatCard("SESIONES", "🎶", "Registro de tres canciones reunidas en un mismo audiovisual.")}
+    ${avFormatCard("HOGARES", "🏡", "<strong>Una canción </strong> en el corazón de un hogar.")}
+    ${avFormatCard("CONCIERTO", "🎤", "<strong>Una canción </strong> realizada en un concierto o con espectadores.")}
+    ${avFormatCard("LOCALES", "☕", "<strong>Dos audiovisuales</strong>, compartiendo promoción junto a un local.")}
+    ${avFormatCard("SESIONES", "🎶", "<strong>Tres canciones </strong> reunidas en un mismo audiovisual.")}
   </div>
   <div class="grid grid-wide" id="av-grid">
     ${rows.map((r) => contentCard(r)).join("")}
